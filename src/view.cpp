@@ -12,8 +12,8 @@
 #include <utility>
 
 /* project specific c++ includes */
-#include "include/ui_builder.hpp"
 #include "include/view.hpp"
+#include "include/ui_builder.hpp"
 
 // =============================================================================
 //                       Editor Impl
@@ -93,12 +93,10 @@ void ViewUI::add_flags() {
         .build<FlagsUI>();
 }
 
-void ViewUI::run() {
-    while (true) {
-        int ch = editor->read();
-        if (!std::isalnum(ch) && ch != ' ' && ch != ',') continue;
-        ch = toupper(ch);
-        editor->update(ch);
-        if (ch == 'Q') break;
-    }
+int ViewUI::read() {
+    return editor->read();
+}
+
+void ViewUI::update(int ch) {
+    editor->update(ch);
 }

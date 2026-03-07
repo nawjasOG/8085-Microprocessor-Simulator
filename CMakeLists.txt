@@ -8,9 +8,10 @@ set(CXX_WARNINGS -Wno-macro-redefined -Wall -Wextra)
 # List all source files
 set(SOURCE_DIR src)
 set(SOURCE_FILES
-    ${SOURCE_DIR}/8085_main.cpp
     ${SOURCE_DIR}/ui_builder.cpp
     ${SOURCE_DIR}/view.cpp
+    ${SOURCE_DIR}/app_controller.cpp
+    ${SOURCE_DIR}/8085_main.cpp
 )
 
 add_executable(8085 ${SOURCE_FILES})

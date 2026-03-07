@@ -39,7 +39,8 @@ class ViewUI {
     void add_buttons();
     void add_registers();
     void add_flags();
-    void run();
+    int read();
+    void update(int ch);
 
  public:
     std::shared_ptr<Editor> editor;

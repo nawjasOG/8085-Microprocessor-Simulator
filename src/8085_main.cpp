@@ -6,11 +6,12 @@
  */
 
 /* project specific includes */
+#include "include/app_controller.hpp"
 #include "include/view.hpp"
 
 int main() {
     ViewUI view;
-    view.initialize();
-    view.run();
+    AppController app(view);
+    app.run();
     return 0;
 }

@@ -23,9 +23,17 @@ std::string to_hex(size_t value, size_t hex_digits) {
     return ss.str();
 }
 
+// =============================================================================
+//                       InterfaceUI Impl
+// =============================================================================
 void InterfaceUI::initialize() {
     __window.create_window(__length, __width, __start_y, __start_x);
     __window.draw_box();
+    __window.set_echo(false);
+}
+
+CursesWindow& InterfaceUI::get_window() {
+    return __window;
 }
 
 void InterfaceUI::setDimension(const size_t length, const size_t width) {
@@ -38,12 +46,28 @@ void InterfaceUI::setStartPosition(const size_t start_y, const size_t start_x) {
     __start_x = start_x;
 }
 
+void InterfaceUI::setHeader(const std::string& header) {
+    __header = header;
+}
+
+// =============================================================================
+//                       TableUI Impl
+// =============================================================================
+void TableUI::add_ui() {
+    initialize();
+    __window.horizontal_line(2, 1, __width-2);
+    size_t header_start_x = (__width - __header.size())/2;
+    __window.print(1, header_start_x, __header);
+}
+
+// =============================================================================
+//                       FlagsUI Impl
+// =============================================================================
 void FlagsUI::add_ui() {
     initialize();
     __window.horizontal_line(2, 1, __width-2);
-    const std::string header = "FLAGS";
-    size_t header_start_x = (__width - header.size())/2;
-    __window.print(1, header_start_x, header);
+    size_t header_start_x = (__width - __header.size())/2;
+    __window.print(1, header_start_x, __header);
 
     for (size_t flag_index = 1; flag_index < flag_names.size(); ++flag_index) {
         __window.vertical_line(3, flag_index * PER_FLAG_SIZE, __length-4);
@@ -56,16 +80,18 @@ void FlagsUI::add_ui() {
     }
 }
 
-void RegisterUI::add_ui() {
+// =============================================================================
+//                       RegisterUI Impl
+// =============================================================================
+void RegistersUI::add_ui() {
     initialize();
     const size_t total_rows = 3, row_width = 2;
     for (size_t line_index = 1; line_index < total_rows; ++line_index) {
         __window.horizontal_line(line_index*row_width, 1,
                                         __width-2);
     }
-    const std::string header = "REGISTERS";
-    size_t header_start_x = (__width - header.size())/2;
-    __window.print(1, header_start_x, header);
+    size_t header_start_x = (__width - __header.size())/2;
+    __window.print(1, header_start_x, __header);
 
     const size_t wrap_size = __width - 1;
     for (size_t reg_index = 0; reg_index < register_names.size(); ++reg_index) {
@@ -78,7 +104,7 @@ void RegisterUI::add_ui() {
     }
 }
 
-void RegisterUI::refresh(const std::string& reg, const uint8_t value) {
+void RegistersUI::refresh(const std::string& reg, const uint8_t value) {
     size_t index = std::find(register_names.begin(), register_names.end(),
                              reg) - register_names.begin();
     size_t y_pos = (index > 3)? 5 : 3;
@@ -86,14 +112,30 @@ void RegisterUI::refresh(const std::string& reg, const uint8_t value) {
     __window.print(y_pos, x_pos+3, to_hex(value, 2));
 }
 
+// =============================================================================
+//                       ButtonUI Impl
+// =============================================================================
+void ButtonUI::add_ui() {
+    initialize();
+    size_t header_start_x = (__width - __header.size())/2;
+    __window.print(1, header_start_x, __header);
+}
+
+// =============================================================================
+//                       UIBuilder Impl
+// =============================================================================
 UIBuilder::UIBuilder(std::unique_ptr<InterfaceUI> ui) : __ui(std::move(ui)) {}
 
 UIBuilder UIBuilder::create(const UIType& ui_type) {
     switch (ui_type) {
+        case UIType::Button:
+            return UIBuilder(std::make_unique<ButtonUI>());
         case UIType::Flags:
             return UIBuilder(std::make_unique<FlagsUI>());
         case UIType::Registers:
-            return UIBuilder(std::make_unique<RegisterUI>());
+            return UIBuilder(std::make_unique<RegistersUI>());
+        case UIType::Table:
+            return UIBuilder(std::make_unique<TableUI>());
     }
     throw std::invalid_argument("unknown ui class");
 }
@@ -106,6 +148,11 @@ UIBuilder& UIBuilder::setDimension(const size_t length, const size_t width) {
 UIBuilder& UIBuilder::setStartPosition(const size_t start_y,
                                        const size_t start_x) {
     __ui->setStartPosition(start_y, start_x);
+    return *this;
+}
+
+UIBuilder& UIBuilder::setHeader(const std::string& header) {
+    __ui->setHeader(header);
     return *this;
 }
 

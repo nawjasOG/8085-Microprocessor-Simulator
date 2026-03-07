@@ -5,33 +5,33 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <algorithm>
 #include <cctype>
 #include <string>
 #include <memory>
-#include <vector>
-#include <iomanip>
-#include <sstream>
+#include <utility>
 
 #include "ui_builder.hpp"
 #include <ncurses_facade.hpp>
 
-#define TABLE_LENGTH 25
-#define ADDRESS_COL_SIZE 11
-#define SRC_CODE_SIZE 22
-#define MACHINE_CODE_SIZE 22
-#define TABLE_WIDTH (ADDRESS_COL_SIZE + SRC_CODE_SIZE + MACHINE_CODE_SIZE)
-
-#define BTN_LENGTH 3
-#define RUN_BTN_SIZE (ADDRESS_COL_SIZE + SRC_CODE_SIZE - 1)
-#define INSPECT_BTN_SIZE (TABLE_WIDTH - RUN_BTN_SIZE - 2)
-
 class Editor {
  public:
-    explicit Editor(CursesWindow &editor_win) : __editor_win(editor_win) {}
+    explicit Editor(std::unique_ptr<TableUI> editor_ui)
+        : __editor_ui(std::move(editor_ui)),
+            __window(__editor_ui->get_window()) {
+        __window.move(3, 2);
+    }
+
+    int read() {
+        return __window.read();
+    }
+
+    void update(int ch) {
+        __window.print(ch);
+    }
 
  private:
-    CursesWindow &__editor_win;
+    std::unique_ptr<TableUI> __editor_ui;
+    CursesWindow& __window;
 };
 
 class ViewUI {
@@ -39,65 +39,67 @@ class ViewUI {
     void initialize() {
         add_table();
         add_buttons();
-        __register_ui = UIBuilder::create(UIType::Registers)
-            .setDimension(REG_WIN_LENGTH, REG_WIN_WIDTH)
-            .setStartPosition(0, TABLE_WIDTH)
-            .build<RegisterUI>();
-
-        editor = std::make_shared<Editor>(__source_code_win);
-        __flag_ui = UIBuilder::create(UIType::Flags)
-            .setDimension(FLAG_WIN_LENGTH, FLAG_WIN_WIDTH)
-            .setStartPosition(REG_WIN_LENGTH, TABLE_WIDTH)
-            .build<FlagsUI>();
+        add_registers();
+        add_flags();
     }
 
     void add_table() {
-        size_t last_column_x = 0;
-        auto create_column = [&](CursesWindow &generic_win, const size_t width,
-                                 const std::string &header) {
-            generic_win.create_window(TABLE_LENGTH, width, 0, last_column_x);
-            generic_win.draw_box();
-            generic_win.horizontal_line(2, 1, width-2);
-            size_t header_start_x = (width - header.size())/2;
-            generic_win.print(1, header_start_x, header);
-            last_column_x += width - 1;
-        };
+        __address_ui = UIBuilder::create(UIType::Table)
+            .setDimension(TABLE_LENGTH, ADDRESS_COL_SIZE)
+            .setStartPosition(0, 0)
+            .setHeader("ADDRESS")
+            .build<TableUI>();
 
-        create_column(__address_win, ADDRESS_COL_SIZE, "ADDRESS");
-        create_column(__source_code_win, SRC_CODE_SIZE, "SOURCE CODE");
-        create_column(__machine_code_win, MACHINE_CODE_SIZE, "MACHINE CODE");
+        __source_code_ui = UIBuilder::create(UIType::Table)
+            .setDimension(TABLE_LENGTH, SRC_CODE_SIZE)
+            .setStartPosition(0, ADDRESS_COL_SIZE-1)
+            .setHeader("SOURCE CODE")
+            .build<TableUI>();
+        editor = std::make_shared<Editor>(std::move(__source_code_ui));
+
+        __machine_code_ui = UIBuilder::create(UIType::Table)
+            .setDimension(TABLE_LENGTH, MACHINE_CODE_SIZE)
+            .setStartPosition(0, ADDRESS_COL_SIZE + SRC_CODE_SIZE -2)
+            .setHeader("MACHINE CODE")
+            .build<TableUI>();
     }
 
     void add_buttons() {
-        size_t last_btn_x = 0;
-        auto create_btn = [&](CursesWindow &generic_btn, const size_t width,
-                             const std::string &header) {
-            generic_btn.create_window(BTN_LENGTH, width, TABLE_LENGTH,
-                                      last_btn_x);
-            generic_btn.draw_box();
-            size_t header_start_x = (width - header.size())/2;
-            generic_btn.print(1, header_start_x, header);
-            last_btn_x += width;
-        };
+        __run_btn = UIBuilder::create(UIType::Button)
+            .setDimension(BTN_LENGTH, RUN_BTN_SIZE)
+            .setStartPosition(TABLE_LENGTH, 0)
+            .setHeader("RUN PROGRAM")
+            .build<ButtonUI>();
 
-        create_btn(__run_btn, RUN_BTN_SIZE, "RUN PROGRAM");
-        create_btn(__inspect_memory_btn, INSPECT_BTN_SIZE, "INSPECT MEMORY");
+        __inspect_memory_btn = UIBuilder::create(UIType::Button)
+            .setDimension(BTN_LENGTH, INSPECT_BTN_SIZE)
+            .setStartPosition(TABLE_LENGTH, RUN_BTN_SIZE)
+            .setHeader("INSPECT MEMORY")
+            .build<ButtonUI>();
+    }
+
+    void add_registers() {
+        __register_ui = UIBuilder::create(UIType::Registers)
+            .setDimension(REG_WIN_LENGTH, REG_WIN_WIDTH)
+            .setStartPosition(0, TABLE_WIDTH)
+            .setHeader("REGISTERS")
+            .build<RegistersUI>();
+    }
+
+    void add_flags() {
+        __flag_ui = UIBuilder::create(UIType::Flags)
+            .setDimension(FLAG_WIN_LENGTH, FLAG_WIN_WIDTH)
+            .setStartPosition(REG_WIN_LENGTH, TABLE_WIDTH)
+            .setHeader("FLAGS")
+            .build<FlagsUI>();
     }
 
     void run() {
-        __source_code_win.move(3, 1);
-        __source_code_win.set_echo(false);
         while (true) {
-            int ch = __source_code_win.read();
-            if (ch == KEY_ESC) {
-                size_t y_last = __source_code_win.get_cursor_y();
-                size_t x_last = __source_code_win.get_cursor_x();
-                __register_ui->refresh("A", 254);
-                __source_code_win.move(y_last, x_last);
-            }
+            int ch = editor->read();
             if (!std::isalnum(ch) && ch != ' ' && ch != ',') continue;
             ch = toupper(ch);
-            __source_code_win.print(ch);
+            editor->update(ch);
             if (ch == 'Q') break;
         }
     }
@@ -106,8 +108,8 @@ class ViewUI {
     std::shared_ptr<Editor> editor;
 
  private:
-    CursesWindow __address_win, __source_code_win, __machine_code_win;
-    CursesWindow __run_btn, __inspect_memory_btn;
-    std::unique_ptr<RegisterUI> __register_ui;
+    std::unique_ptr<TableUI> __address_ui, __source_code_ui, __machine_code_ui;
+    std::unique_ptr<RegistersUI> __register_ui;
     std::unique_ptr<FlagsUI> __flag_ui;
+    std::unique_ptr<ButtonUI> __run_btn, __inspect_memory_btn;
 };

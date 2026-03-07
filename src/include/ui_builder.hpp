@@ -16,6 +16,12 @@
 /* third-party c++ includes */
 #include <ncurses_facade.hpp>
 
+#define TABLE_LENGTH 25
+#define ADDRESS_COL_SIZE 11
+#define SRC_CODE_SIZE 22
+#define MACHINE_CODE_SIZE 22
+#define TABLE_WIDTH (ADDRESS_COL_SIZE + SRC_CODE_SIZE + MACHINE_CODE_SIZE)
+
 #define REG_WIN_WIDTH 41
 #define REG_WIN_LENGTH 7
 #define PER_REG_SIZE 10
@@ -26,21 +32,42 @@
 #define PER_FLAG_SIZE 8
 #define TOTAL_FLAGS 5
 
+#define BTN_LENGTH 3
+#define RUN_BTN_SIZE (ADDRESS_COL_SIZE + SRC_CODE_SIZE - 1)
+#define INSPECT_BTN_SIZE (TABLE_WIDTH - RUN_BTN_SIZE - 2)
+
 std::string to_hex(size_t value, size_t hex_digits);
 
+// =============================================================================
+//                       Interface Class for UI
+// =============================================================================
 class InterfaceUI {
  public:
     virtual void add_ui() = 0;
     void initialize();
+    CursesWindow& get_window();
 
     void setDimension(const size_t length, const size_t width);
     void setStartPosition(const size_t start_y, const size_t start_x);
+    void setHeader(const std::string& header);
 
  protected:
     CursesWindow __window;
     size_t __length, __width, __start_y, __start_x;
+    std::string __header;
 };
 
+// =============================================================================
+//                       Table Column UI Class
+// =============================================================================
+class TableUI : public InterfaceUI {
+ public:
+    void add_ui() final;
+};
+
+// =============================================================================
+//                       Flags UI Class
+// =============================================================================
 class FlagsUI : public InterfaceUI {
  public:
     void add_ui() final;
@@ -49,7 +76,10 @@ class FlagsUI : public InterfaceUI {
     const std::vector<std::string> flag_names = {"S", "Z", "AC", "P", "CY"};
 };
 
-class RegisterUI : public InterfaceUI {
+// =============================================================================
+//                       Registers UI Class
+// =============================================================================
+class RegistersUI : public InterfaceUI {
  public:
     void add_ui() final;
     void refresh(const std::string& reg, const uint8_t value);
@@ -59,9 +89,22 @@ class RegisterUI : public InterfaceUI {
         {"A", "B", "C", "D", "E", "H", "L"};
 };
 
+// =============================================================================
+//                       Buttons UI Class
+// =============================================================================
+class ButtonUI : public InterfaceUI {
+ public:
+    void add_ui() final;
+};
+
+// =============================================================================
+//                       Builder Class for UI Elements
+// =============================================================================
 enum class UIType {
+    Button,
     Flags,
     Registers,
+    Table,
 };
 
 class UIBuilder {
@@ -73,6 +116,7 @@ class UIBuilder {
 
     UIBuilder& setDimension(const size_t length, const size_t width);
     UIBuilder& setStartPosition(const size_t start_y, const size_t start_x);
+    UIBuilder& setHeader(const std::string& header);
     // std::unique_ptr<InterfaceUI> build();
 
     template<typename T>

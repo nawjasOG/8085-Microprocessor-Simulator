@@ -5,8 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <ncurses_facade.hpp>
+
 #include "include/app_controller.hpp"
 #include "include/view.hpp"
+#include "include/command.hpp"
 
 AppController::AppController(ViewUI& view) : __view(view) {
     __view.initialize();
@@ -15,6 +18,13 @@ AppController::AppController(ViewUI& view) : __view(view) {
 void AppController::run() {
     while (true) {
         int ch = __view.read();
+        if (ch == KEY_ENTER_) {
+            std::string instruction = __view.editor->get_line();
+            __source_code.push_back(instruction);
+            std::shared_ptr<ICommand> cmd = ICommand::get_command(instruction);
+            __view.update(cmd->get_opcode());
+            continue;
+        }
         ch = toupper(ch);
         if (!valid_character(ch)) continue;
         __view.update(ch);
@@ -24,4 +34,8 @@ void AppController::run() {
 
 bool AppController::valid_character(int ch) {
     return std::isalnum(ch) || ch == ' ' || ch == ',';
+}
+
+void AppController::update_code() {
+
 }

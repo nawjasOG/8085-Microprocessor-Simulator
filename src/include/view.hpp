@@ -10,6 +10,8 @@
 
 /* standard c++ includes */
 #include <memory>
+#include <ncurses_facade.hpp>
+#include <string>
 
 /* project specific c++ includes */
 #include "ui_builder.hpp"
@@ -23,6 +25,10 @@ class Editor {
 
     int read() const;
     void update(int ch);
+    std::string get_line() const;
+    CursesWindow& get_window() {
+        return __window;
+    }
 
  private:
     std::unique_ptr<TableUI> __editor_ui;
@@ -41,6 +47,7 @@ class ViewUI {
     void add_flags();
     int read();
     void update(int ch);
+    void update(const uint8_t opcode);
 
  public:
     std::shared_ptr<Editor> editor;

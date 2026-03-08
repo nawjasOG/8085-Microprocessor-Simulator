@@ -32,6 +32,16 @@ void Editor::update(int ch) {
     __window.print(ch);
 }
 
+std::string Editor::get_line() const {
+    size_t current_y = __window.get_cursor_y();
+    size_t current_x = __window.get_cursor_x();
+    std::string instruction{};
+    for (size_t x = 2; x <= current_x; ++x) {
+        instruction.append(1, __window.get_char_at(current_y, x));
+    }
+    return instruction;
+}
+
 // =============================================================================
 //                       ViewUI Impl
 // =============================================================================
@@ -99,4 +109,9 @@ int ViewUI::read() {
 
 void ViewUI::update(int ch) {
     editor->update(ch);
+}
+
+void ViewUI::update(uint8_t opcode) {
+    const size_t current_y = editor->get_window().get_cursor_y();
+    __machine_code_ui->get_window().print(current_y, 2, to_hex(opcode, 2));
 }

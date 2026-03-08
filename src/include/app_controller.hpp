@@ -8,6 +8,8 @@
 #ifndef __APP_CONTROLLER_HPP__
 #define __APP_CONTROLLER_HPP__
 
+#include <string>
+#include <vector>
 #include "view.hpp"
 
 class AppController {
@@ -16,9 +18,11 @@ class AppController {
 
     void run();
     bool valid_character(int ch);
+    void update_code();
 
  private:
     ViewUI& __view;
+    std::vector<std::string> __source_code;
 };
 
 #endif  // __APP_CONTROLLER_HPP__

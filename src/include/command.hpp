@@ -8,13 +8,13 @@
 #ifndef __COMMAND_HPP__
 #define __COMMAND_HPP__
 
-#include <cstdint>
+/* standard c++ includes */
 #include <memory>
-#include <sstream>
 #include <string>
 
-std::string get_first_word(const std::string& str);
-
+// =============================================================================
+//                       Command Interface Class
+// =============================================================================
 class ICommand {
  public:
     static std::shared_ptr<ICommand> get_command(std::string instruction);
@@ -29,6 +29,9 @@ class ICommand {
     uint8_t __opcode;
 };
 
+// =============================================================================
+//                       ADD Class for ADD instruction
+// =============================================================================
 class ADD : public ICommand {
  public:
     ADD();

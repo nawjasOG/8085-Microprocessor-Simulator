@@ -5,37 +5,67 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+/* standard c++ includes */
+#include <cctype>
+#include <memory>
+#include <string>
+
+/* third-party c++ includes */
 #include <ncurses_facade.hpp>
 
+/* project specific c++ includes */
 #include "include/app_controller.hpp"
 #include "include/view.hpp"
 #include "include/command.hpp"
 
+// =============================================================================
+//                       AppController Impl
+// =============================================================================
 AppController::AppController(ViewUI& view) : __view(view) {
     __view.initialize();
 }
 
 void AppController::run() {
     while (true) {
-        int ch = __view.read();
-        if (ch == KEY_ENTER_) {
-            std::string instruction = __view.editor->get_line();
-            __source_code.push_back(instruction);
-            std::shared_ptr<ICommand> cmd = ICommand::get_command(instruction);
-            __view.update(cmd->get_opcode());
-            continue;
-        }
-        ch = toupper(ch);
+        int ch = __view.editor->read();
+        handle_special_keys(ch);
         if (!valid_character(ch)) continue;
-        __view.update(ch);
+        ch = toupper(ch);
+        __view.editor->update(ch);
         if (ch == 'Q') break;
     }
 }
 
-bool AppController::valid_character(int ch) {
-    return std::isalnum(ch) || ch == ' ' || ch == ',';
+void AppController::handle_special_keys(int ch) {
+    switch (ch) {
+        // NOTE: this is KEY_ENTER_ and not KEY_ENTER
+        case KEY_ENTER_:
+            handle_enter();
+            break;
+        case KEY_BACKSPACE:
+            handle_backspace();
+            break;
+    }
 }
 
-void AppController::update_code() {
+void AppController::handle_enter() {
+    std::string instruction = __view.editor->get_line();
+    std::shared_ptr<ICommand> cmd = ICommand::get_command(instruction);
+    __source_code.push_back(cmd);
+    __view.update(cmd->get_opcode());
+}
 
+void AppController::handle_backspace() {
+    size_t current_row = __view.editor->get_line_number();
+    size_t current_col = __view.editor->get_column_number();
+    if (current_col == Editor::START_X) {
+        if (current_row == Editor::START_Y) return;
+        // TODO: handle this case
+        return;
+    }
+    __view.editor->delete_last_char();
+}
+
+bool AppController::valid_character(int ch) {
+    return std::isalnum(ch) || ch == ' ' || ch == ',';
 }

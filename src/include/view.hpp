@@ -25,14 +25,17 @@ class Editor {
 
     int read() const;
     void update(int ch);
+    size_t get_line_number() const;
+    size_t get_column_number() const;
+    void move_to_next_line();
+    void delete_last_char();
     std::string get_line() const;
-    CursesWindow& get_window() {
-        return __window;
-    }
 
  private:
     std::unique_ptr<TableUI> __editor_ui;
-    CursesWindow& __window;
+
+ public:
+    static constexpr size_t START_Y = 3, START_X = 2;
 };
 
 // =============================================================================
@@ -53,7 +56,7 @@ class ViewUI {
     std::shared_ptr<Editor> editor;
 
  private:
-    std::unique_ptr<TableUI> __address_ui, __source_code_ui, __machine_code_ui;
+    std::unique_ptr<TableUI> __address_ui, __machine_code_ui;
     std::unique_ptr<RegistersUI> __register_ui;
     std::unique_ptr<FlagsUI> __flag_ui;
     std::unique_ptr<ButtonUI> __run_btn, __inspect_memory_btn;

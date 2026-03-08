@@ -7,33 +7,21 @@
 
 /* standard c++ includes */
 #include <algorithm>
-#include <iomanip>
 #include <memory>
-#include <sstream>
 #include <string>
 #include <utility>
 
 /* project specific c++ includes */
+#include "include/utils.hpp"
 #include "include/ui_builder.hpp"
-
-std::string to_hex(size_t value, size_t hex_digits) {
-    std::stringstream ss;
-    ss << "0x" << std::hex << std::uppercase
-       << std::setfill('0') << std::setw(hex_digits) << value;
-    return ss.str();
-}
 
 // =============================================================================
 //                       InterfaceUI Impl
 // =============================================================================
 void InterfaceUI::initialize() {
-    __window.create_window(__length, __width, __start_y, __start_x);
-    __window.draw_box();
-    __window.set_echo(false);
-}
-
-CursesWindow& InterfaceUI::get_window() {
-    return __window;
+    create_window(__length, __width, __start_y, __start_x);
+    draw_box();
+    set_echo(false);
 }
 
 void InterfaceUI::setDimension(const size_t length, const size_t width) {
@@ -55,9 +43,9 @@ void InterfaceUI::setHeader(const std::string& header) {
 // =============================================================================
 void TableUI::add_ui() {
     initialize();
-    __window.horizontal_line(2, 1, __width-2);
+    horizontal_line(2, 1, __width-2);
     size_t header_start_x = (__width - __header.size())/2;
-    __window.print(1, header_start_x, __header);
+    print(1, header_start_x, __header);
 }
 
 // =============================================================================
@@ -65,18 +53,18 @@ void TableUI::add_ui() {
 // =============================================================================
 void FlagsUI::add_ui() {
     initialize();
-    __window.horizontal_line(2, 1, __width-2);
+    horizontal_line(2, 1, __width-2);
     size_t header_start_x = (__width - __header.size())/2;
-    __window.print(1, header_start_x, __header);
+    print(1, header_start_x, __header);
 
     for (size_t flag_index = 1; flag_index < flag_names.size(); ++flag_index) {
-        __window.vertical_line(3, flag_index * PER_FLAG_SIZE, __length-4);
+        vertical_line(3, flag_index * PER_FLAG_SIZE, __length-4);
     }
 
     for (size_t flag_index = 0; flag_index < flag_names.size(); ++flag_index) {
         const std::string flag_name = flag_names[flag_index] + ": 0";
         const size_t x_pos = flag_index * PER_FLAG_SIZE + 2;
-        __window.print(3, x_pos, flag_name);
+        print(3, x_pos, flag_name);
     }
 }
 
@@ -87,20 +75,20 @@ void RegistersUI::add_ui() {
     initialize();
     const size_t total_rows = 3, row_width = 2;
     for (size_t line_index = 1; line_index < total_rows; ++line_index) {
-        __window.horizontal_line(line_index*row_width, 1,
+        horizontal_line(line_index*row_width, 1,
                                         __width-2);
     }
     size_t header_start_x = (__width - __header.size())/2;
-    __window.print(1, header_start_x, __header);
+    print(1, header_start_x, __header);
 
     const size_t wrap_size = __width - 1;
     for (size_t reg_index = 0; reg_index < register_names.size(); ++reg_index) {
         size_t row_index = (reg_index > 3)? 5 : 3;
         size_t x_pos_line = ((reg_index + 1) * PER_REG_SIZE) % wrap_size;
         size_t x_pos = (reg_index * PER_REG_SIZE + 2) % wrap_size;
-        __window.vertical_line(3, x_pos_line, __length-4);
+        vertical_line(3, x_pos_line, __length-4);
         const std::string register_name = register_names[reg_index] + ": 0x00";
-        __window.print(row_index, x_pos, register_name);
+        print(row_index, x_pos, register_name);
     }
 }
 
@@ -109,7 +97,7 @@ void RegistersUI::refresh(const std::string& reg, const uint8_t value) {
                              reg) - register_names.begin();
     size_t y_pos = (index > 3)? 5 : 3;
     size_t x_pos = (index * PER_REG_SIZE + 2) % (__width - 1);
-    __window.print(y_pos, x_pos+3, to_hex(value, 2));
+    print(y_pos, x_pos+3, utils::to_hex(value, 2));
 }
 
 // =============================================================================
@@ -118,7 +106,7 @@ void RegistersUI::refresh(const std::string& reg, const uint8_t value) {
 void ButtonUI::add_ui() {
     initialize();
     size_t header_start_x = (__width - __header.size())/2;
-    __window.print(1, header_start_x, __header);
+    print(1, header_start_x, __header);
 }
 
 // =============================================================================

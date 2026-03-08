@@ -5,23 +5,20 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <cstdint>
+/* standard c++ includes */
 #include <memory>
-#include <sstream>
 #include <stdexcept>
 #include <string>
 
+/* project specific c++ includes */
+#include "include/utils.hpp"
 #include "include/command.hpp"
 
-std::string get_first_word(const std::string& str) {
-    std::istringstream iss(str);
-    std::string word;
-    iss >> word;
-    return word;
-}
-
+// =============================================================================
+//                       ICommand Impl
+// =============================================================================
 std::shared_ptr<ICommand> ICommand::get_command(std::string instruction) {
-    std::string command = get_first_word(instruction);
+    std::string command = utils::get_first_word(instruction);
     if (command == "ADD") {
         return std::make_shared<ADD>();
     }
@@ -36,6 +33,9 @@ uint8_t ICommand::get_opcode() {
     return __opcode;
 }
 
+// =============================================================================
+//                       ADD Impl
+// =============================================================================
 ADD::ADD() {
     set_opcode(80);
 }

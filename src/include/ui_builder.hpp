@@ -36,23 +36,19 @@
 #define RUN_BTN_SIZE (ADDRESS_COL_SIZE + SRC_CODE_SIZE - 1)
 #define INSPECT_BTN_SIZE (TABLE_WIDTH - RUN_BTN_SIZE - 2)
 
-std::string to_hex(size_t value, size_t hex_digits);
-
 // =============================================================================
 //                       Interface Class for UI
 // =============================================================================
-class InterfaceUI {
+class InterfaceUI : public CursesWindow {
  public:
     virtual void add_ui() = 0;
     void initialize();
-    CursesWindow& get_window();
 
     void setDimension(const size_t length, const size_t width);
     void setStartPosition(const size_t start_y, const size_t start_x);
     void setHeader(const std::string& header);
 
  protected:
-    CursesWindow __window;
     size_t __length, __width, __start_y, __start_x;
     std::string __header;
 };

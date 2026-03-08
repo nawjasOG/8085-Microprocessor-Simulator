@@ -3,11 +3,13 @@ project(8085Microprocessor VERSION 1.0)
 
 # set c++ standard to c++17
 set(CMAKE_CXX_STANDARD 17)
-set(CXX_WARNINGS -Wno-macro-redefined -Wall -Wextra)
+# set(CXX_WARNINGS -Wno-macro-redefined -Wall -Wextra)
+set(CXX_WARNINGS -Wall -Wextra)
 
 # List all source files
 set(SOURCE_DIR src)
 set(SOURCE_FILES
+    ${SOURCE_DIR}/utils.cpp
     ${SOURCE_DIR}/ui_builder.cpp
     ${SOURCE_DIR}/view.cpp
     ${SOURCE_DIR}/command.cpp

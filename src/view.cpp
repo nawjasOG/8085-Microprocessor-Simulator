@@ -6,12 +6,12 @@
  */
 
 /* standard c++ includes */
-#include <cctype>
 #include <string>
 #include <memory>
 #include <utility>
 
 /* project specific c++ includes */
+#include "include/utils.hpp"
 #include "include/view.hpp"
 #include "include/ui_builder.hpp"
 
@@ -19,25 +19,41 @@
 //                       Editor Impl
 // =============================================================================
 Editor::Editor(std::unique_ptr<TableUI> editor_ui)
-    : __editor_ui(std::move(editor_ui)),
-        __window(__editor_ui->get_window()) {
-    __window.move(3, 2);
+    : __editor_ui(std::move(editor_ui)) {
+    __editor_ui->move(START_Y, START_X);
 }
 
 int Editor::read() const {
-    return __window.read();
+    return __editor_ui->read();
 }
 
 void Editor::update(int ch) {
-    __window.print(ch);
+    __editor_ui->print(ch);
+}
+
+size_t Editor::get_line_number() const {
+    return __editor_ui->get_cursor_y();
+}
+
+size_t Editor::get_column_number() const {
+    return __editor_ui->get_cursor_x();
+}
+
+void Editor::move_to_next_line() {
+    __editor_ui->move(get_line_number()+1, START_X);
+}
+
+void Editor::delete_last_char() {
+    __editor_ui->print(get_line_number(), get_column_number()-1, ' ');
+    __editor_ui->movex(get_column_number()-1);
 }
 
 std::string Editor::get_line() const {
-    size_t current_y = __window.get_cursor_y();
-    size_t current_x = __window.get_cursor_x();
+    size_t current_y = get_line_number();
+    size_t current_x = get_column_number();
     std::string instruction{};
-    for (size_t x = 2; x <= current_x; ++x) {
-        instruction.append(1, __window.get_char_at(current_y, x));
+    for (size_t x = START_X; x <= current_x; ++x) {
+        instruction.append(1, __editor_ui->get_char_at(current_y, x));
     }
     return instruction;
 }
@@ -59,12 +75,12 @@ void ViewUI::add_table() {
         .setHeader("ADDRESS")
         .build<TableUI>();
 
-    __source_code_ui = UIBuilder::create(UIType::Table)
+    std::unique_ptr<TableUI> source_code_ui = UIBuilder::create(UIType::Table)
         .setDimension(TABLE_LENGTH, SRC_CODE_SIZE)
         .setStartPosition(0, ADDRESS_COL_SIZE-1)
         .setHeader("SOURCE CODE")
         .build<TableUI>();
-    editor = std::make_shared<Editor>(std::move(__source_code_ui));
+    editor = std::make_shared<Editor>(std::move(source_code_ui));
 
     __machine_code_ui = UIBuilder::create(UIType::Table)
         .setDimension(TABLE_LENGTH, MACHINE_CODE_SIZE)
@@ -103,15 +119,8 @@ void ViewUI::add_flags() {
         .build<FlagsUI>();
 }
 
-int ViewUI::read() {
-    return editor->read();
-}
-
-void ViewUI::update(int ch) {
-    editor->update(ch);
-}
-
 void ViewUI::update(uint8_t opcode) {
-    const size_t current_y = editor->get_window().get_cursor_y();
-    __machine_code_ui->get_window().print(current_y, 2, to_hex(opcode, 2));
+    const size_t current_line = editor->get_line_number();
+    __machine_code_ui->print(current_line, 2, utils::to_hex(opcode, 2));
+    editor->move_to_next_line();
 }

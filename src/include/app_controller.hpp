@@ -8,21 +8,26 @@
 #ifndef __APP_CONTROLLER_HPP__
 #define __APP_CONTROLLER_HPP__
 
-#include <string>
-#include <vector>
+/* project specific c++ includes */
 #include "view.hpp"
+#include "command.hpp"
 
+// =============================================================================
+//                       App Controller (Presenter in MVP)
+// =============================================================================
 class AppController {
  public:
     AppController(ViewUI& view);
 
     void run();
+    void handle_special_keys(int ch);
+    void handle_enter();
+    void handle_backspace();
     bool valid_character(int ch);
-    void update_code();
 
  private:
     ViewUI& __view;
-    std::vector<std::string> __source_code;
+    std::vector<std::shared_ptr<ICommand>> __source_code;
 };
 
 #endif  // __APP_CONTROLLER_HPP__

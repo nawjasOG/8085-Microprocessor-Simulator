@@ -32,6 +32,12 @@ void AppController::run() {
         handle_special_keys(ch);
         if (!valid_character(ch)) continue;
         ch = toupper(ch);
+        if (ch == 'X') {  // HACK:
+            std::string line = __view.editor->get_line();
+            if (line.size() >= 2 && line[line.size()-2] == '0') {
+                ch = tolower(ch);
+            }
+        }
         __view.editor->update(ch);
         if (ch == 'Q') break;
     }

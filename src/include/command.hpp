@@ -54,6 +54,7 @@ class ICommand {
         {"B", "C", "D", "E", "H", "L", "M", "A"};
 
  private:
+    static bool is_address(const std::string& str);
     virtual void setup_opcode_table() = 0;
     virtual uint8_t lookup_opcode();
     virtual std::vector<uint8_t> get_operand_codes();
@@ -93,4 +94,19 @@ class MOV : public ICommand {
  private:
     void setup_opcode_table() final;
 };
+
+// =============================================================================
+//                       MVI Class for MVI instruction
+// =============================================================================
+class MVI : public ICommand {
+ public:
+    explicit MVI(const std::string& instruction);
+
+    bool execute() final;
+    void undo() final;
+
+ private:
+    void setup_opcode_table() final;
+};
+
 #endif  // __COMMAND_HPP__

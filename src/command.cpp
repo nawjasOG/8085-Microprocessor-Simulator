@@ -8,6 +8,7 @@
 /* standard c++ includes */
 #include <cstdint>
 #include <memory>
+#include <regex>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -28,6 +29,8 @@ std::shared_ptr<ICommand> ICommand::get_command(std::string instruction) {
         return std::make_shared<ADD>(instruction);
     } else if (command == "MOV") {
         return std::make_shared<MOV>(instruction);
+    } else if (command == "MVI") {
+        return std::make_shared<MVI>(instruction);
     }
     throw std::invalid_argument("invalid command");
 }
@@ -73,14 +76,18 @@ void ICommand::parse(Parser parser) {
     update_machine_code();
 }
 
+bool ICommand::is_address(const std::string& str) {
+    static const std::regex hex_regex(R"(^0[xX][0-9a-fA-F]+$)");
+    static const std::regex num_regex(R"(^[0-9]+$)");
+    if (std::regex_match(str, hex_regex)) return true;
+    if (std::regex_match(str, num_regex)) return true;
+    return false;
+}
+
 uint8_t ICommand::lookup_opcode() {
     std::string key{};
     for (auto& operand : _operands) {
-        // TODO::
-        // if (ICommand::is_address(operand)) {
-        //     key += "Z";
-        //     continue;
-        // }
+        if (ICommand::is_address(operand)) continue;
         key += operand;
     }
     return _opcode_db.at(key);
@@ -88,14 +95,13 @@ uint8_t ICommand::lookup_opcode() {
 
 std::vector<uint8_t> ICommand::get_operand_codes() {
     std::vector<uint8_t> operand_code;
-    // for (auto& operand : _operands) {
-        // TODO:
-        // if (!ICommand::is_address(operand)) continue;
+    for (auto& operand : _operands) {
+        if (!ICommand::is_address(operand)) continue;
         // // check if address/value is integer or hex
         // // if integer, convert to hex
         // // if address, break into two values 0xFFFF to 0xFF 0xFF
-        // operand_code += hex_address;
-    // }
+        operand_code.push_back(std::stoi(operand, nullptr, 16));
+    }
 
     return operand_code;
 }
@@ -159,5 +165,27 @@ void MOV::setup_opcode_table() {
     for (auto& second_register : _registers) {
         const std::string key = "A" + second_register;
         _opcode_db[key] = current_opcode++;
+    }
+}
+
+// =============================================================================
+//                       MVI Impl
+// =============================================================================
+MVI::MVI(const std::string& instruction) : ICommand(instruction) {
+    parse(Parser::DualOperand);
+}
+
+bool MVI::execute() {
+    return true;
+}
+
+void MVI::undo() {
+}
+
+void MVI::setup_opcode_table() {
+    uint8_t current_opcode = 0x06;
+    for (auto& first_register : _registers) {
+        _opcode_db[first_register] = current_opcode;
+        current_opcode += 8;
     }
 }

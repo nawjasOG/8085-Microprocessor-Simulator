@@ -7,6 +7,7 @@
 
 /* standard c++ includes */
 #include <iomanip>
+#include <regex>
 #include <sstream>
 #include <string>
 
@@ -14,6 +15,13 @@
 #include "include/utils.hpp"
 
 namespace utils {
+
+std::string normalize_string(std::string str) {
+    str = std::regex_replace(str, std::regex("^\\s+"), "");  // trim leading
+    str = std::regex_replace(str, std::regex("\\s+"), " ");  // collapse spaces
+    str.erase(str.find_last_not_of(" \t\n\r\f\v") + 1);      // trim trailing
+    return str;
+}
 
 std::string get_first_word(const std::string& str) {
     std::istringstream iss(str);

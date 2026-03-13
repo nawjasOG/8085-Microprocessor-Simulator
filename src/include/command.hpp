@@ -9,23 +9,46 @@
 #define __COMMAND_HPP__
 
 /* standard c++ includes */
+#include <cstdint>
 #include <memory>
 #include <string>
+#include <unordered_map>
+#include <vector>
+
+// =============================================================================
+//                       Enum class for type of parsers
+// =============================================================================
+enum class Parser {
+    NoOperand,
+    SingleOperand,
+    DualOperand,
+};
 
 // =============================================================================
 //                       Command Interface Class
 // =============================================================================
 class ICommand {
  public:
-    static std::shared_ptr<ICommand> get_command(std::string instruction);
+    explicit ICommand(const std::string& instruction);
 
+    static std::shared_ptr<ICommand> get_command(std::string instruction);
     virtual bool execute() = 0;
     virtual void undo() = 0;
-
-    void set_opcode(const uint8_t opcode);
     uint8_t get_opcode();
 
+ protected:
+    void parse(Parser parser);
+
+    std::vector<std::string> _operands;
+    std::unordered_map<std::string, int> _opcode_db;
+
  private:
+    virtual uint8_t lookup_opcode();
+    virtual uint8_t resolve_opcode(const std::string &key);
+    virtual void setup_opcode_table() = 0;
+    void set_opcode(const uint8_t opcode);
+
+    std::string __instruction;
     uint8_t __opcode;
 };
 
@@ -34,9 +57,13 @@ class ICommand {
 // =============================================================================
 class ADD : public ICommand {
  public:
-    ADD();
+    explicit ADD(const std::string& instruction);
+
     bool execute() final;
     void undo() final;
+
+ private:
+    void setup_opcode_table() final;
 };
 
 #endif  // __COMMAND_HPP__

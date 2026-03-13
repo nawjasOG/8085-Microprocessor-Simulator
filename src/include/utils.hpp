@@ -14,6 +14,14 @@
 namespace utils {
 
 /**
+ * @brief normalize_string(std::string str)
+ * @description remove leading, trailing and collapse spaces
+ * @param std::string str
+ * @return clean string after normalizing
+ */
+std::string normalize_string(std::string str);
+
+/**
  * @brief get_first_word(const std::string& str)
  * @description gets the first word in a string (space delimited)
  * @param std::string str

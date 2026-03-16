@@ -17,12 +17,14 @@
 /* project specific c++ includes */
 #include "include/app_controller.hpp"
 #include "include/view.hpp"
+#include "include/model.hpp"
 #include "include/command.hpp"
 
 // =============================================================================
 //                       AppController Impl
 // =============================================================================
-AppController::AppController(ViewUI& view) : __view(view) {
+AppController::AppController(ViewUI& view, Model& model) : __view(view),
+        __model(model) {
     __view.initialize();
 }
 

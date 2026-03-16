@@ -11,10 +11,12 @@
 /* project specific includes */
 #include "include/app_controller.hpp"
 #include "include/view.hpp"
+#include "include/model.hpp"
 
 int main() {
     ViewUI view;
-    AppController app(view);
+    Model model;
+    AppController app(view, model);
     try {
         app.run();
     }

@@ -14,6 +14,7 @@
 
 /* project specific c++ includes */
 #include "view.hpp"
+#include "model.hpp"
 #include "command.hpp"
 
 // =============================================================================
@@ -21,7 +22,7 @@
 // =============================================================================
 class AppController {
  public:
-    AppController(ViewUI& view);
+    AppController(ViewUI& view, Model& model);
 
     void run();
     void handle_special_keys(int ch);
@@ -33,6 +34,7 @@ class AppController {
 
  private:
     ViewUI& __view;
+    Model& __model;
     std::vector<std::shared_ptr<ICommand>> __source_code;
 };
 

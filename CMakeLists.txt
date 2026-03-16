@@ -12,6 +12,7 @@ set(SOURCE_FILES
     ${SOURCE_DIR}/utils.cpp
     ${SOURCE_DIR}/ui_builder.cpp
     ${SOURCE_DIR}/view.cpp
+    ${SOURCE_DIR}/model.cpp
     ${SOURCE_DIR}/command.cpp
     ${SOURCE_DIR}/app_controller.cpp
     ${SOURCE_DIR}/8085_main.cpp

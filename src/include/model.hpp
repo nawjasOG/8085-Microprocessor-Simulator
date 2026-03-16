@@ -9,17 +9,22 @@
 #define __MODEL_HPP__
 
 /* standard c++ includes */
+#include <array>
 #include <cstdint>
 #include <map>
 #include <string>
-#include <vector>
+
+#define MEMORY_SIZE 65536
 
 // =============================================================================
 //                       CpuRegister Class for 8085 registers
 // =============================================================================
 class CpuRegisters {
  public:
-    void set_register(std::string register_name);
+    uint8_t accumulator();
+    void set_accumulator(uint8_t value);
+    uint8_t get_register(const std::string& register_name);
+    void set_register(const std::string& register_name, uint8_t value);
 
  private:
     std::map<std::string, uint8_t> __registers = {
@@ -35,7 +40,7 @@ class Memory {
     void set_memory(uint16_t address, uint8_t value);
 
  private:
-    std::vector<uint8_t> __memory;
+    std::array<uint8_t, MEMORY_SIZE> __memory;
 };
 
 // =============================================================================
@@ -44,7 +49,7 @@ class Memory {
 class Model {
  public:
     CpuRegisters registers;
-    const Memory memory;
+    Memory memory;
 };
 
 #endif  // __MODEL_HPP__

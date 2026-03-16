@@ -15,6 +15,9 @@
 #include <unordered_map>
 #include <vector>
 
+/* project specific c++ includes */
+#include "model.hpp"
+
 // =============================================================================
 //                       Macros for instructions
 // =============================================================================
@@ -47,8 +50,8 @@ class ICommand {
     explicit ICommand(const std::string& instruction);
 
     static std::shared_ptr<ICommand> get_command(std::string instruction);
-    virtual bool execute() = 0;
-    virtual void undo() = 0;
+    virtual bool execute(Model& model) = 0;
+    virtual void undo(Model& model) = 0;
     uint16_t get_address();
     std::vector<uint8_t> get_machine_code();
     uint8_t get_opcode();
@@ -83,8 +86,8 @@ class ADD : public ICommand {
  public:
     explicit ADD(const std::string& instruction);
 
-    bool execute() final;
-    void undo() final;
+    bool execute(Model& model) final;
+    void undo(Model &model) final;
 
  private:
     void setup_opcode_table() final;
@@ -97,8 +100,8 @@ class MOV : public ICommand {
  public:
     explicit MOV(const std::string& instruction);
 
-    bool execute() final;
-    void undo() final;
+    bool execute(Model& model) final;
+    void undo(Model& model) final;
 
  private:
     void setup_opcode_table() final;
@@ -111,8 +114,8 @@ class MVI : public ICommand {
  public:
     explicit MVI(const std::string& instruction);
 
-    bool execute() final;
-    void undo() final;
+    bool execute(Model& model) final;
+    void undo(Model& model) final;
 
  private:
     void setup_opcode_table() final;

@@ -30,6 +30,7 @@ class AppController {
     void handle_backspace();
     void handle_click();
     uint16_t next_address();
+    void run_program();
     bool valid_character(int ch);
 
  private:

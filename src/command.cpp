@@ -138,11 +138,17 @@ ADD::ADD(const std::string& instruction) : ICommand(instruction) {
     parse(Parser::SingleOperand);
 }
 
-bool ADD::execute() {
+bool ADD::execute(Model& model) {
+    std::string& register_name = _operands.at(0);
+    uint8_t value = model.registers.get_register(register_name);
+    uint8_t accumulator = model.registers.accumulator();
+    // FIXME: handle overflow and carry case
+    model.registers.set_accumulator(accumulator + value);
+    // TODO: also do some book-keeping for undo to work
     return true;
 }
 
-void ADD::undo() {
+void ADD::undo(Model& model) {
 }
 
 void ADD::setup_opcode_table() {
@@ -159,11 +165,16 @@ MOV::MOV(const std::string& instruction) : ICommand(instruction) {
     parse(Parser::DualOperand);
 }
 
-bool MOV::execute() {
+bool MOV::execute(Model& model) {
+    std::string& destination = _operands.at(0);
+    std::string& source = _operands.at(1);
+    uint8_t value = model.registers.get_register(source);
+    model.registers.set_register(destination, value);
+    // TODO: also do some book-keeping for undo to work
     return true;
 }
 
-void MOV::undo() {
+void MOV::undo(Model& model) {
 }
 
 void MOV::setup_opcode_table() {
@@ -189,11 +200,11 @@ MVI::MVI(const std::string& instruction) : ICommand(instruction) {
     parse(Parser::DualOperand);
 }
 
-bool MVI::execute() {
+bool MVI::execute(Model& model) {
     return true;
 }
 
-void MVI::undo() {
+void MVI::undo(Model& model) {
 }
 
 void MVI::setup_opcode_table() {

@@ -87,7 +87,7 @@ void AppController::handle_click() {
     switch (btn) {
         case ButtonType::RUN_BTN:
             // TEST:
-            __view.editor->print("run clicked ");
+            run_program();
             break;
         case ButtonType::INSPECT_MEMORY_BTN:
             // TEST:
@@ -104,6 +104,12 @@ uint16_t AppController::next_address() {
     const uint16_t current_addr = last->get_address();
     const uint16_t next_addr = current_addr + last->get_machine_code().size();
     return next_addr;
+}
+
+void AppController::run_program() {
+    for (auto cmd : __source_code) {
+        cmd->execute(__model);
+    }
 }
 
 bool AppController::valid_character(int ch) {

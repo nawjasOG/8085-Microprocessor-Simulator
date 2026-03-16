@@ -8,55 +8,11 @@
 /* standard c++ includes */
 #include <string>
 #include <memory>
-#include <utility>
 
 /* project specific c++ includes */
 #include "include/utils.hpp"
 #include "include/view.hpp"
 #include "include/ui_builder.hpp"
-
-// =============================================================================
-//                       Editor Impl
-// =============================================================================
-Editor::Editor(std::unique_ptr<TableUI> editor_ui)
-    : __editor_ui(std::move(editor_ui)) {
-    __editor_ui->move(START_Y, START_X);
-}
-
-int Editor::read() const {
-    return __editor_ui->read();
-}
-
-void Editor::update(int ch) {
-    __editor_ui->print(ch);
-}
-
-size_t Editor::get_line_number() const {
-    return __editor_ui->get_cursor_y();
-}
-
-size_t Editor::get_column_number() const {
-    return __editor_ui->get_cursor_x();
-}
-
-void Editor::move_to_next_line() {
-    __editor_ui->move(get_line_number()+1, START_X);
-}
-
-void Editor::delete_last_char() {
-    __editor_ui->print(get_line_number(), get_column_number()-1, ' ');
-    __editor_ui->movex(get_column_number()-1);
-}
-
-std::string Editor::get_line() const {
-    size_t current_y = get_line_number();
-    size_t current_x = get_column_number();
-    std::string instruction{};
-    for (size_t x = START_X; x <= current_x; ++x) {
-        instruction.append(1, __editor_ui->get_char_at(current_y, x));
-    }
-    return instruction;
-}
 
 // =============================================================================
 //                       ViewUI Impl
@@ -75,12 +31,12 @@ void ViewUI::add_table() {
         .setHeader("ADDRESS")
         .build<TableUI>();
 
-    std::unique_ptr<TableUI> source_code_ui = UIBuilder::create(UIType::Table)
+    editor = UIBuilder::create(UIType::Editor)
         .setDimension(TABLE_LENGTH, SRC_CODE_SIZE)
         .setStartPosition(0, ADDRESS_COL_SIZE-1)
         .setHeader("SOURCE CODE")
-        .build<TableUI>();
-    editor = std::make_shared<Editor>(std::move(source_code_ui));
+        .build<EditorUI>();
+    editor->move(EditorUI::START_Y, EditorUI::START_X);
 
     __machine_code_ui = UIBuilder::create(UIType::Table)
         .setDimension(TABLE_LENGTH, MACHINE_CODE_SIZE)
@@ -117,6 +73,19 @@ void ViewUI::add_flags() {
         .setStartPosition(REG_WIN_LENGTH, TABLE_WIDTH)
         .setHeader("FLAGS")
         .build<FlagsUI>();
+}
+
+ButtonType ViewUI::button_clicked() const {
+    MouseEvent event = CursesWindow::get_mouse_event();
+    if (event.left_click) {
+        if (__run_btn->is_click_within_bounds(event.y, event.x)) {
+            return ButtonType::RUN_BTN;
+        } else if (__inspect_memory_btn->is_click_within_bounds(
+                event.y, event.x)) {
+            return ButtonType::INSPECT_MEMORY_BTN;
+        }
+    }
+    return ButtonType::NO_BTN;
 }
 
 void ViewUI::update(const ViewState& state) {

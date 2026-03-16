@@ -94,6 +94,21 @@ class ButtonUI : public InterfaceUI {
 };
 
 // =============================================================================
+//                       Edtior UI Class
+// =============================================================================
+class EditorUI : public TableUI {
+ public:
+    void update(int ch);
+    size_t get_line_number() const;
+    size_t get_column_number() const;
+    void move_to_next_line();
+    void delete_last_char();
+    std::string get_line() const;
+
+    static constexpr size_t START_Y = 3, START_X = 2;
+};
+
+// =============================================================================
 //                       Builder Class for UI Elements
 // =============================================================================
 enum class UIType {
@@ -101,6 +116,7 @@ enum class UIType {
     Flags,
     Registers,
     Table,
+    Editor,
 };
 
 class UIBuilder {

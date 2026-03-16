@@ -11,7 +11,6 @@
 /* standard c++ includes */
 #include <cstdint>
 #include <memory>
-#include <string>
 #include <vector>
 #include <ncurses_facade.hpp>
 
@@ -19,33 +18,20 @@
 #include "ui_builder.hpp"
 
 // =============================================================================
+//                       ButtonType Enum class
+// =============================================================================
+enum class ButtonType {
+    NO_BTN,
+    RUN_BTN,
+    INSPECT_MEMORY_BTN,
+};
+
+// =============================================================================
 //                       ViewState: data-structure for changes in view
 // =============================================================================
 struct ViewState {
     std::vector<uint8_t> machine_code;
     uint16_t address;
-};
-
-// =============================================================================
-//                       Edtior Class for View
-// =============================================================================
-class Editor {
- public:
-    explicit Editor(std::unique_ptr<TableUI> editor_ui);
-
-    int read() const;
-    void update(int ch);
-    size_t get_line_number() const;
-    size_t get_column_number() const;
-    void move_to_next_line();
-    void delete_last_char();
-    std::string get_line() const;
-
- private:
-    std::unique_ptr<TableUI> __editor_ui;
-
- public:
-    static constexpr size_t START_Y = 3, START_X = 2;
 };
 
 // =============================================================================
@@ -58,12 +44,11 @@ class ViewUI {
     void add_buttons();
     void add_registers();
     void add_flags();
-    int read();
-    void update(int ch);
+    ButtonType button_clicked() const;
     void update(const ViewState& state);
 
  public:
-    std::shared_ptr<Editor> editor;
+    std::unique_ptr<EditorUI> editor;
 
  private:
     std::unique_ptr<TableUI> __address_ui, __machine_code_ui;

@@ -18,6 +18,7 @@ set(SOURCE_FILES
 )
 
 add_executable(8085 ${SOURCE_FILES})
+#target_link_libraries(8085 nCursesFacade ncurses)
 target_link_libraries(8085 nCursesFacade)
 target_compile_options(8085 PRIVATE ${CXX_WARNINGS})
 

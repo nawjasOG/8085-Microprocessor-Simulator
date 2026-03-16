@@ -27,6 +27,7 @@ class AppController {
     void handle_special_keys(int ch);
     void handle_enter();
     void handle_backspace();
+    void handle_click();
     uint16_t next_address();
     bool valid_character(int ch);
 

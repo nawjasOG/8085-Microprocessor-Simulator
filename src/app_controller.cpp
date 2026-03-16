@@ -39,7 +39,7 @@ void AppController::run() {
             }
         }
         __view.editor->update(ch);
-        if (ch == 'Q') break;
+        if (ch == 'Q') break;  // HACK:
     }
 }
 
@@ -52,6 +52,8 @@ void AppController::handle_special_keys(int ch) {
         case KEY_BACKSPACE:
             handle_backspace();
             break;
+        case KEY_MOUSE:
+            handle_click();
     }
 }
 
@@ -70,12 +72,28 @@ void AppController::handle_enter() {
 void AppController::handle_backspace() {
     size_t current_row = __view.editor->get_line_number();
     size_t current_col = __view.editor->get_column_number();
-    if (current_col == Editor::START_X) {
-        if (current_row == Editor::START_Y) return;
+    if (current_col == EditorUI::START_X) {
+        if (current_row == EditorUI::START_Y) return;
         // TODO: handle this case
         return;
     }
     __view.editor->delete_last_char();
+}
+
+void AppController::handle_click() {
+    ButtonType btn = __view.button_clicked();
+    switch (btn) {
+        case ButtonType::RUN_BTN:
+            // TEST:
+            __view.editor->print("run clicked ");
+            break;
+        case ButtonType::INSPECT_MEMORY_BTN:
+            // TEST:
+            __view.editor->print("inspect clicked ");
+            break;
+        case ButtonType::NO_BTN:
+            break;
+    }
 }
 
 uint16_t AppController::next_address() {

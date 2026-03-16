@@ -8,6 +8,7 @@
 /* standard c++ includes */
 #include <algorithm>
 #include <memory>
+#include <stdexcept>
 #include <string>
 #include <utility>
 
@@ -22,6 +23,7 @@ void InterfaceUI::initialize() {
     create_window(__length, __width, __start_y, __start_x);
     draw_box();
     set_echo(false);
+    CursesWindow::enable_left_mouse();
 }
 
 void InterfaceUI::setDimension(const size_t length, const size_t width) {
@@ -110,6 +112,40 @@ void ButtonUI::add_ui() {
 }
 
 // =============================================================================
+//                       Editor Impl
+// =============================================================================
+void EditorUI::update(int ch) {
+    print(ch);
+}
+
+size_t EditorUI::get_line_number() const {
+    return get_cursor_y();
+}
+
+size_t EditorUI::get_column_number() const {
+    return get_cursor_x();
+}
+
+void EditorUI::move_to_next_line() {
+    move(get_line_number()+1, START_X);
+}
+
+void EditorUI::delete_last_char() {
+    print(get_line_number(), get_column_number()-1, ' ');
+    movex(get_column_number()-1);
+}
+
+std::string EditorUI::get_line() const {
+    size_t current_y = get_line_number();
+    size_t current_x = get_column_number();
+    std::string instruction{};
+    for (size_t x = START_X; x <= current_x; ++x) {
+        instruction.append(1, get_char_at(current_y, x));
+    }
+    return instruction;
+}
+
+// =============================================================================
 //                       UIBuilder Impl
 // =============================================================================
 UIBuilder::UIBuilder(std::unique_ptr<InterfaceUI> ui) : __ui(std::move(ui)) {}
@@ -124,6 +160,8 @@ UIBuilder UIBuilder::create(const UIType& ui_type) {
             return UIBuilder(std::make_unique<RegistersUI>());
         case UIType::Table:
             return UIBuilder(std::make_unique<TableUI>());
+        case UIType::Editor:
+            return UIBuilder(std::make_unique<EditorUI>());
     }
     throw std::invalid_argument("unknown ui class");
 }

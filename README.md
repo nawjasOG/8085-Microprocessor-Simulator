@@ -1,6 +1,10 @@
 # 8085-Microprocessor-Simulator
 8085 Microprocessor Simulator in C++
 
+## Pre-Requisite
+following lib is required for this project to compile:
+[nCursesFacade](https://github.com/uchihaMadara-7/nCursesFacade.git)
+
 ## How to build
 ```Shell
 ~$ cmake -S . -B build

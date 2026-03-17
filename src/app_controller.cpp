@@ -7,9 +7,11 @@
 
 /* standard c++ includes */
 #include <cctype>
+#include <chrono>
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <thread>
 
 /* third-party c++ includes */
 #include <ncurses_facade.hpp>
@@ -103,11 +105,20 @@ uint16_t AppController::next_address() {
 }
 
 void AppController::run_program() {
+    __view.save_cursor();
+    __view.editor->cursor_mode(CURSOR_INVISIBLE);
+    size_t line = EditorUI::START_Y;
     for (auto cmd : __source_code) {
+        __view.editor->highlight_line(line, 1, __view.editor->get_width()-2, 1);
+        std::this_thread::sleep_for(std::chrono::milliseconds(1500));
         if (cmd->execute(__model)) {
             notify_cpu_state();
         }
+        __view.editor->unhighlight_line(line, 1, __view.editor->get_width()-2);
+        ++line;
     }
+    __view.editor->cursor_mode(CURSOR_VISIBLE_NORMAL);
+    __view.reset_cursor();
 }
 
 void AppController::notify_cpu_state() {

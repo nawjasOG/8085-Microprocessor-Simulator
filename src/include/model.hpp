@@ -13,6 +13,7 @@
 #include <cstdint>
 #include <map>
 #include <string>
+#include <vector>
 
 #define MEMORY_SIZE 65536
 
@@ -21,14 +22,22 @@
 // =============================================================================
 class CpuRegisters {
  public:
-    uint8_t accumulator();
+    uint8_t accumulator() const;
     void set_accumulator(uint8_t value);
-    uint8_t get_register(const std::string& register_name);
+    uint8_t get_register(const std::string& register_name) const;
     void set_register(const std::string& register_name, uint8_t value);
+    std::vector<uint8_t> get_all_registers() const;
 
  private:
     std::map<std::string, uint8_t> __registers = {
         {"A", 0}, {"B", 0}, {"C", 0}, {"D", 0}, {"E", 0}, {"H", 0}, {"L", 0}
+    };
+};
+
+class CpuFlags {
+ private:
+    std::map<std::string, uint8_t> __flags = {
+        {"S", 0}, {"Z", 0}, {"AC", 0}, {"P", 0}, {"CY", 0}
     };
 };
 
@@ -49,6 +58,7 @@ class Memory {
 class Model {
  public:
     CpuRegisters registers;
+    CpuFlags flags;
     Memory memory;
 };
 

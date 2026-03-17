@@ -7,10 +7,12 @@
 
 /* standard c++ includes */
 #include <algorithm>
+#include <cstdint>
 #include <memory>
 #include <stdexcept>
 #include <string>
 #include <utility>
+#include <vector>
 
 /* project specific c++ includes */
 #include "include/utils.hpp"
@@ -94,12 +96,12 @@ void RegistersUI::add_ui() {
     }
 }
 
-void RegistersUI::refresh(const std::string& reg, const uint8_t value) {
-    size_t index = std::find(register_names.begin(), register_names.end(),
-                             reg) - register_names.begin();
-    size_t y_pos = (index > 3)? 5 : 3;
-    size_t x_pos = (index * PER_REG_SIZE + 2) % (__width - 1);
-    print(y_pos, x_pos+3, utils::to_hex(value, 2));
+void RegistersUI::refresh(const std::vector<uint8_t>& registers) {
+    for (size_t index = 0; index < registers.size(); ++index) {
+        size_t y_pos = (index > 3)? 5 : 3;
+        size_t x_pos = (index * PER_REG_SIZE + 2) % (__width - 1);
+        print(y_pos, x_pos+3, utils::to_hex(registers[index], 2));
+    }
 }
 
 // =============================================================================

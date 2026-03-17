@@ -7,6 +7,7 @@
 
 /* standard c++ includes */
 #include <cstdint>
+#include <cstdlib>
 #include <memory>
 #include <regex>
 #include <stdexcept>
@@ -201,6 +202,22 @@ MVI::MVI(const std::string& instruction) : ICommand(instruction) {
 }
 
 bool MVI::execute(Model& model) {
+    std::string& destination = _operands.at(0);
+    uint8_t source = 0;
+    std::string& operand = _operands.at(1);
+    NumberType type = ICommand::is_address(operand);
+    switch (type) {
+        case NumberType::Invalid:
+            break;
+        case NumberType::Integer:
+            source = std::stoi(operand, nullptr, 10);
+            break;
+        case NumberType::Hex:
+            source = std::stoi(operand, nullptr, 16);
+            break;
+    }
+    model.registers.set_register(destination, source);
+    // TODO: also do some book-keeping for undo to work
     return true;
 }
 

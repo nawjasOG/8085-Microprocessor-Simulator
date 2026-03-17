@@ -64,11 +64,7 @@ void AppController::handle_enter() {
     std::shared_ptr<ICommand> cmd = ICommand::get_command(instruction);
     cmd->set_address(next_address());
     __source_code.push_back(cmd);
-    ViewState state = {
-        .machine_code = cmd->get_machine_code(),
-        .address = cmd->get_address(),
-    };
-    __view.update(state);
+    notify_memory_state();
 }
 
 void AppController::handle_backspace() {
@@ -108,8 +104,30 @@ uint16_t AppController::next_address() {
 
 void AppController::run_program() {
     for (auto cmd : __source_code) {
-        cmd->execute(__model);
+        if (cmd->execute(__model)) {
+            notify_cpu_state();
+        }
     }
+}
+
+void AppController::notify_cpu_state() {
+    CpuState state = {
+        .registers = __model.registers.get_all_registers(),
+    };
+    __view.render_cpu_view(state);
+}
+
+void AppController::notify_memory_state() {
+    if (__source_code.empty()) {
+        // TODO: handle this case
+        return;
+    }
+    auto cmd = __source_code.back();
+    MemoryState state = {
+        .machine_code = cmd->get_machine_code(),
+        .address = cmd->get_address(),
+    };
+    __view.render_memory_view(state);
 }
 
 bool AppController::valid_character(int ch) {

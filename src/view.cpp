@@ -22,6 +22,7 @@ void ViewUI::initialize() {
     add_buttons();
     add_registers();
     add_flags();
+    reset_cursor();
 }
 
 void ViewUI::add_table() {
@@ -36,7 +37,6 @@ void ViewUI::add_table() {
         .setStartPosition(0, ADDRESS_COL_SIZE-1)
         .setHeader("SOURCE CODE")
         .build<EditorUI>();
-    editor->move(EditorUI::START_Y, EditorUI::START_X);
 
     __machine_code_ui = UIBuilder::create(UIType::Table)
         .setDimension(TABLE_LENGTH, MACHINE_CODE_SIZE)
@@ -88,9 +88,8 @@ ButtonType ViewUI::button_clicked() const {
     return ButtonType::NO_BTN;
 }
 
-void ViewUI::update(const ViewState& state) {
+void ViewUI::render_memory_view(const MemoryState& state) {
     const size_t current_line = editor->get_line_number();
-    // __machine_code_ui->print(current_line, 2, utils::to_hex(opcode, 2));
     size_t current_pos = 2;
     for (auto& machine_code : state.machine_code) {
         const std::string code = utils::to_hex(machine_code, 2);
@@ -99,4 +98,19 @@ void ViewUI::update(const ViewState& state) {
     }
     __address_ui->print(current_line, 2, utils::to_hex(state.address, 4));
     editor->move_to_next_line();
+}
+
+void ViewUI::render_cpu_view(const CpuState& state) {
+    save_cursor();
+    __register_ui->refresh(state.registers);
+    reset_cursor();
+}
+
+void ViewUI::reset_cursor() {
+    editor->move(__cursor_y, __cursor_x);
+}
+
+void ViewUI::save_cursor() {
+    __cursor_y = editor->get_line_number();
+    __cursor_x = editor->get_column_number();
 }

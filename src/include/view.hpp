@@ -29,9 +29,14 @@ enum class ButtonType {
 // =============================================================================
 //                       ViewState: data-structure for changes in view
 // =============================================================================
-struct ViewState {
+struct MemoryState {
     std::vector<uint8_t> machine_code;
     uint16_t address;
+};
+
+struct CpuState {
+    std::vector<uint8_t> registers;
+    std::vector<uint8_t> flags;
 };
 
 // =============================================================================
@@ -45,9 +50,11 @@ class ViewUI {
     void add_registers();
     void add_flags();
     ButtonType button_clicked() const;
-    void update(const ViewState& state);
+    void render_cpu_view(const CpuState& state);
+    void render_memory_view(const MemoryState& state);
+    void reset_cursor();
+    void save_cursor();
 
- public:
     std::unique_ptr<EditorUI> editor;
 
  private:
@@ -55,6 +62,7 @@ class ViewUI {
     std::unique_ptr<RegistersUI> __register_ui;
     std::unique_ptr<FlagsUI> __flag_ui;
     std::unique_ptr<ButtonUI> __run_btn, __inspect_memory_btn;
+    size_t __cursor_y = EditorUI::START_Y, __cursor_x = EditorUI::START_X;
 };
 
 #endif  // __VIEW_HPP__

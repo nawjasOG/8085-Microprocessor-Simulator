@@ -31,6 +31,8 @@ class AppController {
     void handle_click();
     uint16_t next_address();
     void run_program();
+    void notify_cpu_state();
+    void notify_memory_state();
     bool valid_character(int ch);
 
  private:

@@ -58,6 +58,7 @@ class ICommand {
     void set_address(uint16_t address);
 
  protected:
+    static NumberType is_address(const std::string& str);
     void parse(Parser parser);
 
     std::vector<std::string> _operands;
@@ -66,7 +67,6 @@ class ICommand {
         {"B", "C", "D", "E", "H", "L", "M", "A"};
 
  private:
-    static NumberType is_address(const std::string& str);
     virtual void setup_opcode_table() = 0;
     virtual uint8_t lookup_opcode();
     virtual std::vector<uint8_t> get_operand_codes();

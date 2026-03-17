@@ -9,6 +9,7 @@
 #define __UI_BUILDER_HPP__
 
 /* standard c++ includes */
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <vector>
@@ -78,7 +79,7 @@ class FlagsUI : public InterfaceUI {
 class RegistersUI : public InterfaceUI {
  public:
     void add_ui() final;
-    void refresh(const std::string& reg, const uint8_t value);
+    void refresh(const std::vector<uint8_t>& registers);
 
  private:
     const std::vector<std::string> register_names =

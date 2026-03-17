@@ -43,7 +43,7 @@
 class InterfaceUI : public CursesWindow {
  public:
     virtual void add_ui() = 0;
-    void initialize();
+    void initialize(bool border = true);
 
     void setDimension(const size_t length, const size_t width);
     void setStartPosition(const size_t start_y, const size_t start_x);

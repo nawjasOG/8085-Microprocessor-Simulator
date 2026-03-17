@@ -6,7 +6,6 @@
  */
 
 /* standard c++ includes */
-#include <algorithm>
 #include <cstdint>
 #include <memory>
 #include <stdexcept>
@@ -21,9 +20,9 @@
 // =============================================================================
 //                       InterfaceUI Impl
 // =============================================================================
-void InterfaceUI::initialize() {
+void InterfaceUI::initialize(bool border) {
     create_window(__length, __width, __start_y, __start_x);
-    draw_box();
+    border ? draw_box() : (void)0;
     set_echo(false);
     CursesWindow::enable_left_mouse();
 }
@@ -49,7 +48,9 @@ void TableUI::add_ui() {
     initialize();
     horizontal_line(2, 1, __width-2);
     size_t header_start_x = (__width - __header.size())/2;
+    set_attribute(COLOR_PAIR(2));
     print(1, header_start_x, __header);
+    remove_attribute(COLOR_PAIR(2));
 }
 
 // =============================================================================
@@ -59,7 +60,9 @@ void FlagsUI::add_ui() {
     initialize();
     horizontal_line(2, 1, __width-2);
     size_t header_start_x = (__width - __header.size())/2;
+    set_attribute(COLOR_PAIR(2));
     print(1, header_start_x, __header);
+    remove_attribute(COLOR_PAIR(2));
 
     for (size_t flag_index = 1; flag_index < flag_names.size(); ++flag_index) {
         vertical_line(3, flag_index * PER_FLAG_SIZE, __length-4);
@@ -83,7 +86,9 @@ void RegistersUI::add_ui() {
                                         __width-2);
     }
     size_t header_start_x = (__width - __header.size())/2;
+    set_attribute(COLOR_PAIR(2));
     print(1, header_start_x, __header);
+    remove_attribute(COLOR_PAIR(2));
 
     const size_t wrap_size = __width - 1;
     for (size_t reg_index = 0; reg_index < register_names.size(); ++reg_index) {
@@ -108,9 +113,16 @@ void RegistersUI::refresh(const std::vector<uint8_t>& registers) {
 //                       ButtonUI Impl
 // =============================================================================
 void ButtonUI::add_ui() {
-    initialize();
+    initialize(false);
     size_t header_start_x = (__width - __header.size())/2;
+    set_attribute(COLOR_PAIR(2)|A_STANDOUT);
+    for (size_t row = 0; row < __length; ++row) {
+        for (size_t col = 1; col < __width-1; ++col) {
+            print(row, col, 0x20);
+        }
+    }
     print(1, header_start_x, __header);
+    remove_attribute(COLOR_PAIR(2)|A_STANDOUT);
 }
 
 // =============================================================================

@@ -6,6 +6,7 @@
  */
 
 /* standard c++ includes */
+#include <ncurses.h>
 #include <cstdint>
 #include <memory>
 #include <stdexcept>
@@ -59,13 +60,18 @@ void TableUI::add_ui() {
 void FlagsUI::add_ui() {
     initialize();
     horizontal_line(2, 1, __width-2);
+    print(2, 0, ACS_LTEE);
+    print(2, __width-1, ACS_RTEE);
     size_t header_start_x = (__width - __header.size())/2;
     set_attribute(COLOR_PAIR(2));
     print(1, header_start_x, __header);
     remove_attribute(COLOR_PAIR(2));
 
     for (size_t flag_index = 1; flag_index < flag_names.size(); ++flag_index) {
-        vertical_line(3, flag_index * PER_FLAG_SIZE, __length-4);
+        size_t x_pos_line = flag_index * PER_FLAG_SIZE;
+        vertical_line(3, x_pos_line, __length-4);
+        print(2, x_pos_line, ACS_TTEE);
+        print(__length-1, x_pos_line, ACS_BTEE);
     }
 
     for (size_t flag_index = 0; flag_index < flag_names.size(); ++flag_index) {
@@ -82,9 +88,10 @@ void RegistersUI::add_ui() {
     initialize();
     const size_t total_rows = 3, row_width = 2;
     for (size_t line_index = 1; line_index < total_rows; ++line_index) {
-        horizontal_line(line_index*row_width, 1,
-                                        __width-2);
+        horizontal_line(line_index*row_width, 1, __width-2);
     }
+    print(2, 0, ACS_LTEE);
+    print(2, __width-1, ACS_RTEE);
     size_t header_start_x = (__width - __header.size())/2;
     set_attribute(COLOR_PAIR(2));
     print(1, header_start_x, __header);
@@ -96,8 +103,16 @@ void RegistersUI::add_ui() {
         size_t x_pos_line = ((reg_index + 1) * PER_REG_SIZE) % wrap_size;
         size_t x_pos = (reg_index * PER_REG_SIZE + 2) % wrap_size;
         vertical_line(3, x_pos_line, __length-4);
+        x_pos_line > 0 ? print(2, x_pos_line, ACS_TTEE) : (void)0;
+        x_pos_line > 0 ? print(__length-1, x_pos_line, ACS_BTEE) : (void)0;
         const std::string register_name = register_names[reg_index] + ": 0x00";
         print(row_index, x_pos, register_name);
+    }
+    for (size_t index = 0; index < 5; ++index) {
+        size_t x_pos_line = index * PER_REG_SIZE;
+        if (index == 0) print(4, x_pos_line, ACS_LTEE);
+        else if (index == 4) print(4, x_pos_line, ACS_RTEE);
+        else print(4, x_pos_line, ACS_PLUS);
     }
 }
 

@@ -6,6 +6,7 @@
  */
 
 /* standard c++ includes */
+#include <ncurses.h>
 #include <string>
 #include <memory>
 
@@ -43,6 +44,17 @@ void ViewUI::add_table() {
         .setStartPosition(0, ADDRESS_COL_SIZE + SRC_CODE_SIZE -2)
         .setHeader("MACHINE CODE")
         .build<TableUI>();
+
+    // fixing address window border for rendering proper table
+    __address_ui->print(2, 0, ACS_LTEE);
+    __address_ui->print(2, ADDRESS_COL_SIZE-1, ACS_PLUS);
+    __address_ui->print(0, ADDRESS_COL_SIZE-1, ACS_TTEE);
+    __address_ui->print(TABLE_LENGTH-1, ADDRESS_COL_SIZE-1, ACS_BTEE);
+    // fixing machine code window border for rendering proper table
+    __machine_code_ui->print(2, 0, ACS_PLUS);
+    __machine_code_ui->print(2, MACHINE_CODE_SIZE-1, ACS_RTEE);
+    __machine_code_ui->print(0, 0, ACS_TTEE);
+    __machine_code_ui->print(TABLE_LENGTH-1, 0, ACS_BTEE);
 }
 
 void ViewUI::add_buttons() {

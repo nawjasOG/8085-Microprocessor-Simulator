@@ -13,19 +13,23 @@
 #include "include/view.hpp"
 #include "include/model.hpp"
 
-int main() {
+void app() {
     ViewUI view;
     Model model;
     AppController app(view, model);
+    app.run();
+}
+
+int main() {
     try {
-        app.run();
+        app();
     }
     catch (const std::exception& error) {
-        std::cout << "[fatal error]: " << error.what() << std::endl;
+        std::cerr << "[fatal error]: " << error.what() << std::endl;
         return 1;
     }
     catch (...) {
-        std::cout << "an unknown fatal error occurred" << std::endl;
+        std::cerr << "an unknown fatal error occurred" << std::endl;
         return 1;
     }
     return 0;

@@ -26,12 +26,17 @@ ICommand::ICommand(const std::string& instruction)
 
 std::shared_ptr<ICommand> ICommand::get_command(std::string instruction) {
     std::string command = utils::get_first_word(instruction);
-    if (command == "ADD") {
-        return std::make_shared<ADD>(instruction);
-    } else if (command == "MOV") {
-        return std::make_shared<MOV>(instruction);
-    } else if (command == "MVI") {
-        return std::make_shared<MVI>(instruction);
+    try {
+        if (command == "ADD") {
+            return std::make_shared<ADD>(instruction);
+        } else if (command == "MOV") {
+            return std::make_shared<MOV>(instruction);
+        } else if (command == "MVI") {
+            return std::make_shared<MVI>(instruction);
+        }
+    }
+    catch(...) {
+        return std::make_shared<InvalidCommand>();
     }
     throw std::invalid_argument("invalid command");
 }
@@ -88,9 +93,13 @@ NumberType ICommand::is_address(const std::string& str) {
 uint8_t ICommand::lookup_opcode() {
     std::string key{};
     for (auto& operand : _operands) {
-        if (ICommand::is_address(operand) != NumberType::Invalid) continue;
+        if (ICommand::is_address(operand) != NumberType::Invalid) {
+            key += "INT";
+            continue;
+        }
         key += operand;
     }
+    if (key.empty()) key = "NA";
     return _opcode_db.at(key);
 }
 
@@ -130,6 +139,32 @@ void ICommand::update_machine_code() {
     std::vector<uint8_t> operand_code = get_operand_codes();
     __machine_code.insert(__machine_code.end(), operand_code.begin(),
                           operand_code.end());
+}
+
+// =============================================================================
+//                       InvalidCommand Impl
+// =============================================================================
+InvalidCommand::InvalidCommand() : ICommand("InvalidCommand") {
+    set_opcode(0x10);
+    update_machine_code();
+}
+
+bool InvalidCommand::execute(Model& model) {
+    dont_call_me(__FUNCTION__);
+    return false;
+}
+
+void InvalidCommand::undo(Model& model) {
+    dont_call_me(__FUNCTION__);
+}
+
+void InvalidCommand::setup_opcode_table() {
+    dont_call_me(__FUNCTION__);
+}
+
+void InvalidCommand::dont_call_me(const std::string& caller) {
+    std::string error = caller + " restricted";
+    throw std::runtime_error(error);
 }
 
 // =============================================================================
@@ -227,7 +262,8 @@ void MVI::undo(Model& model) {
 void MVI::setup_opcode_table() {
     uint8_t current_opcode = 0x06;
     for (auto& first_register : _registers) {
-        _opcode_db[first_register] = current_opcode;
+        std::string key = first_register + "INT";
+        _opcode_db[key] = current_opcode;
         current_opcode += 8;
     }
 }

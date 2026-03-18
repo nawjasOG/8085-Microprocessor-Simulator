@@ -60,6 +60,8 @@ class ICommand {
  protected:
     static NumberType is_address(const std::string& str);
     void parse(Parser parser);
+    void set_opcode(const uint8_t opcode);
+    void update_machine_code();
 
     std::vector<std::string> _operands;
     std::unordered_map<std::string, int> _opcode_db;
@@ -70,13 +72,25 @@ class ICommand {
     virtual void setup_opcode_table() = 0;
     virtual uint8_t lookup_opcode();
     virtual std::vector<uint8_t> get_operand_codes();
-    void set_opcode(const uint8_t opcode);
-    void update_machine_code();
 
     std::uint16_t __address;
     std::string __instruction;
     std::vector<uint8_t> __machine_code;
     uint8_t __opcode;
+};
+
+// =============================================================================
+//                       InvalidCommand Class
+// =============================================================================
+class InvalidCommand: public ICommand {
+ public:
+    InvalidCommand();
+
+    bool execute(Model& model) final;
+    void undo(Model& model) final;
+ private:
+    void setup_opcode_table() final;
+    void dont_call_me(const std::string& caller);
 };
 
 // =============================================================================
@@ -87,7 +101,7 @@ class ADD : public ICommand {
     explicit ADD(const std::string& instruction);
 
     bool execute(Model& model) final;
-    void undo(Model &model) final;
+    void undo(Model& model) final;
 
  private:
     void setup_opcode_table() final;

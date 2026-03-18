@@ -150,16 +150,16 @@ InvalidCommand::InvalidCommand() : ICommand("InvalidCommand") {
 }
 
 bool InvalidCommand::execute(Model& model) {
-    dont_call_me(__FUNCTION__);
+    dont_call_me(__PRETTY_FUNCTION__);
     return false;
 }
 
 void InvalidCommand::undo(Model& model) {
-    dont_call_me(__FUNCTION__);
+    dont_call_me(__PRETTY_FUNCTION__);
 }
 
 void InvalidCommand::setup_opcode_table() {
-    dont_call_me(__FUNCTION__);
+    dont_call_me(__PRETTY_FUNCTION__);
 }
 
 void InvalidCommand::dont_call_me(const std::string& caller) {

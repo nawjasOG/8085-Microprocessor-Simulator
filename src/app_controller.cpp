@@ -96,7 +96,7 @@ void AppController::handle_click() {
     }
 }
 
-uint16_t AppController::next_address() {
+uint16_t AppController::next_address() const {
     if (__source_code.empty()) return 0;
     auto last = __source_code.back();
     const uint16_t current_addr = last->get_address();
@@ -142,6 +142,6 @@ void AppController::notify_memory_state() {
     __view.render_memory_view(state);
 }
 
-bool AppController::valid_character(int ch) {
+bool AppController::valid_character(int ch) const {
     return std::isalnum(ch) || ch == ' ' || ch == ',';
 }

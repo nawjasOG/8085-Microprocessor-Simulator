@@ -29,11 +29,11 @@ class AppController {
     void handle_enter();
     void handle_backspace();
     void handle_click();
-    uint16_t next_address();
+    uint16_t next_address() const;
     void run_program();
     void notify_cpu_state();
     void notify_memory_state();
-    bool valid_character(int ch);
+    bool valid_character(int ch) const;
 
  private:
     ViewUI& __view;

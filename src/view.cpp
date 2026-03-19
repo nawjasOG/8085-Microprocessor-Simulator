@@ -103,13 +103,14 @@ ButtonType ViewUI::button_clicked() const {
 void ViewUI::render_memory_view(const MemoryState& state) {
     const size_t current_line = editor->get_line_number();
     size_t current_pos = 2;
+    if (state.machine_code[0] == 0x10) {
+        __machine_code_ui->set_attribute(COLOR_PAIR(3));
+        __machine_code_ui->print(current_line, current_pos, "SYNTAX ERROR");
+        __machine_code_ui->remove_attribute(COLOR_PAIR(3));
+        editor->move_to_next_line();
+        return;
+    }
     for (auto& machine_code : state.machine_code) {
-        if (machine_code == 0x10) {
-            __machine_code_ui->set_attribute(COLOR_PAIR(3));
-            __machine_code_ui->print(current_line, current_pos, "SYNTAX ERROR");
-            __machine_code_ui->remove_attribute(COLOR_PAIR(3));
-            break;
-        }
         const std::string code = utils::to_hex(machine_code, 2);
         __machine_code_ui->print(current_line, current_pos, code);
         current_pos += code.size() + 1;

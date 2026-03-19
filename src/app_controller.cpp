@@ -33,7 +33,12 @@ AppController::AppController(ViewUI& view, Model& model) : __view(view),
 void AppController::run() {
     while (true) {
         int ch = __view.editor->read();
-        handle_special_keys(ch);
+        switch (handle_special_keys(ch)) {
+            case AppState::Normal:
+                break;
+            case AppState::Quit:
+                return;
+        }
         if (!valid_character(ch)) continue;
         ch = toupper(ch);
         if (ch == 'X') {  // HACK:
@@ -43,11 +48,10 @@ void AppController::run() {
             }
         }
         __view.editor->update(ch);
-        if (ch == 'Q') break;  // HACK:
     }
 }
 
-void AppController::handle_special_keys(int ch) {
+AppState AppController::handle_special_keys(int ch) {
     switch (ch) {
         // NOTE: this is KEY_ENTER_ and not KEY_ENTER
         case KEY_ENTER_:
@@ -57,8 +61,9 @@ void AppController::handle_special_keys(int ch) {
             handle_backspace();
             break;
         case KEY_MOUSE:
-            handle_click();
+            return handle_click();
     }
+    return AppState::Normal;
 }
 
 void AppController::handle_enter() {
@@ -80,20 +85,22 @@ void AppController::handle_backspace() {
     __view.editor->delete_last_char();
 }
 
-void AppController::handle_click() {
+AppState AppController::handle_click() {
     ButtonType btn = __view.button_clicked();
     switch (btn) {
         case ButtonType::RUN_BTN:
-            // TEST:
             run_program();
             break;
         case ButtonType::INSPECT_MEMORY_BTN:
-            // TEST:
-            __view.editor->print("inspect clicked ");
+            __view.editor->print("inspected");
+            break;
+        case ButtonType::QUIT_BTN:
+            return AppState::Quit;
             break;
         case ButtonType::NO_BTN:
             break;
     }
+    return AppState::Normal;
 }
 
 uint16_t AppController::next_address() const {

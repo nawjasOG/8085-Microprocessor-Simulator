@@ -61,13 +61,19 @@ void ViewUI::add_buttons() {
     __run_btn = UIBuilder::create(UIType::Button)
         .setDimension(BTN_LENGTH, RUN_BTN_SIZE)
         .setStartPosition(TABLE_LENGTH, 0)
-        .setHeader("RUN PROGRAM")
+        .setHeader("RUN")
         .build<ButtonUI>();
 
     __inspect_memory_btn = UIBuilder::create(UIType::Button)
         .setDimension(BTN_LENGTH, INSPECT_BTN_SIZE)
-        .setStartPosition(TABLE_LENGTH, RUN_BTN_SIZE)
+        .setStartPosition(TABLE_LENGTH, RUN_BTN_SIZE-1)
         .setHeader("INSPECT MEMORY")
+        .build<ButtonUI>();
+
+    __quit_btn = UIBuilder::create(UIType::Button)
+        .setDimension(BTN_LENGTH, QUIT_BTN_SIZE)
+        .setStartPosition(TABLE_LENGTH, RUN_BTN_SIZE + INSPECT_BTN_SIZE - 2)
+        .setHeader("QUIT")
         .build<ButtonUI>();
 }
 
@@ -95,6 +101,8 @@ ButtonType ViewUI::button_clicked() const {
         } else if (__inspect_memory_btn->is_click_within_bounds(
                 event.y, event.x)) {
             return ButtonType::INSPECT_MEMORY_BTN;
+        } else if (__quit_btn->is_click_within_bounds(event.y, event.x)) {
+            return ButtonType::QUIT_BTN;
         }
     }
     return ButtonType::NO_BTN;

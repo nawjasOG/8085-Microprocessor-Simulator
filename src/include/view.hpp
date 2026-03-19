@@ -24,6 +24,7 @@ enum class ButtonType {
     NO_BTN,
     RUN_BTN,
     INSPECT_MEMORY_BTN,
+    QUIT_BTN,
 };
 
 // =============================================================================
@@ -61,7 +62,7 @@ class ViewUI {
     std::unique_ptr<TableUI> __address_ui, __machine_code_ui;
     std::unique_ptr<RegistersUI> __register_ui;
     std::unique_ptr<FlagsUI> __flag_ui;
-    std::unique_ptr<ButtonUI> __run_btn, __inspect_memory_btn;
+    std::unique_ptr<ButtonUI> __run_btn, __inspect_memory_btn, __quit_btn;
     size_t __cursor_y = EditorUI::START_Y, __cursor_x = EditorUI::START_X;
 };
 

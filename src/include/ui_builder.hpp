@@ -38,8 +38,9 @@
 #define TOTAL_FLAGS 5
 
 #define BTN_LENGTH 3
-#define RUN_BTN_SIZE (ADDRESS_COL_SIZE + SRC_CODE_SIZE - 1)
-#define INSPECT_BTN_SIZE (TABLE_WIDTH - RUN_BTN_SIZE - 2)
+#define RUN_BTN_SIZE ADDRESS_COL_SIZE
+#define INSPECT_BTN_SIZE SRC_CODE_SIZE
+#define QUIT_BTN_SIZE MACHINE_CODE_SIZE
 
 // =============================================================================
 //                       Interface Class for UI

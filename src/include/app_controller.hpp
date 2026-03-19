@@ -18,6 +18,14 @@
 #include "command.hpp"
 
 // =============================================================================
+//                       AppState enum class
+// =============================================================================
+enum class AppState {
+    Normal,
+    Quit,
+};
+
+// =============================================================================
 //                       App Controller (Presenter in MVP)
 // =============================================================================
 class AppController {
@@ -25,10 +33,10 @@ class AppController {
     AppController(ViewUI& view, Model& model);
 
     void run();
-    void handle_special_keys(int ch);
+    AppState handle_special_keys(int ch);
     void handle_enter();
     void handle_backspace();
-    void handle_click();
+    AppState handle_click();
     uint16_t next_address() const;
     void run_program();
     void notify_cpu_state();

@@ -37,9 +37,9 @@ std::shared_ptr<ICommand> ICommand::get_command(std::string instruction) {
         }
     }
     catch(...) {
-        return std::make_shared<InvalidCommand>();
+        // does nothing, final return happens below
     }
-    throw std::invalid_argument("invalid command");
+    return std::make_shared<InvalidCommand>();
 }
 
 uint16_t ICommand::get_address() {

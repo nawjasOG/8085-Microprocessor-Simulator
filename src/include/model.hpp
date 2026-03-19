@@ -13,7 +13,11 @@
 #include <cstdint>
 #include <map>
 #include <string>
+#include <string_view>
 #include <vector>
+
+/* project specific c++ includes */
+#include "utils.hpp"
 
 #define MEMORY_SIZE 65536
 
@@ -29,16 +33,25 @@ class CpuRegisters {
     std::vector<uint8_t> get_all_registers() const;
 
  private:
-    std::map<std::string, uint8_t> __registers = {
-        {"A", 0}, {"B", 0}, {"C", 0}, {"D", 0}, {"E", 0}, {"H", 0}, {"L", 0}
+    std::map<std::string_view, uint8_t> __registers = {
+        {mpu::ACCUMULATOR, 0}, {mpu::REG_B, 0}, {mpu::REG_C, 0},
+        {mpu::REG_D, 0}, {mpu::REG_E, 0}, {mpu::REG_H, 0}, {mpu::REG_L, 0}
     };
 };
 
 class CpuFlags {
+ public:
+    CpuFlags();
+
+    void reset_flag(const std::string_view& flag_name);
+    void set_flag(const std::string_view& flag_name);
+    std::vector<uint8_t> get_all_flags() const;
+
  private:
-    std::map<std::string, uint8_t> __flags = {
-        {"S", 0}, {"Z", 0}, {"AC", 0}, {"P", 0}, {"CY", 0}
-    };
+    std::map<std::string_view, uint8_t> __flags;
+    std::vector<std::string_view> __flags_order = {
+        mpu::SIGN_FLAG, mpu::ZERO_FLAG, mpu::AUXIL_CARRY_FLAG, mpu::PARITY_FLAG,
+        mpu::CARRY_FLAG };
 };
 
 // =============================================================================

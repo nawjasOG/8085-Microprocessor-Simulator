@@ -12,15 +12,19 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 /* third-party c++ includes */
 #include <ncurses_facade.hpp>
 
+/* project specific c++ include */
+#include "utils.hpp"
+
 #define TABLE_LENGTH 25
 #define ADDRESS_COL_SIZE 11
-#define SRC_CODE_SIZE 22
-#define MACHINE_CODE_SIZE 22
+#define SRC_CODE_SIZE 18
+#define MACHINE_CODE_SIZE 18
 #define TABLE_WIDTH (ADDRESS_COL_SIZE + SRC_CODE_SIZE + MACHINE_CODE_SIZE)
 
 #define REG_WIN_WIDTH 41
@@ -68,9 +72,12 @@ class TableUI : public InterfaceUI {
 class FlagsUI : public InterfaceUI {
  public:
     void add_ui() final;
+    void refresh(const std::vector<uint8_t>& flags);
 
  private:
-    const std::vector<std::string> flag_names = {"S", "Z", "AC", "P", "CY"};
+    const std::vector<std::string_view> flag_names = {
+        mpu::SIGN_FLAG, mpu::ZERO_FLAG, mpu::AUXIL_CARRY_FLAG, mpu::PARITY_FLAG,
+        mpu::CARRY_FLAG };
 };
 
 // =============================================================================
@@ -82,8 +89,9 @@ class RegistersUI : public InterfaceUI {
     void refresh(const std::vector<uint8_t>& registers);
 
  private:
-    const std::vector<std::string> register_names =
-        {"A", "B", "C", "D", "E", "H", "L"};
+    const std::vector<std::string_view> register_names = {
+        mpu::ACCUMULATOR, mpu::REG_B, mpu::REG_C, mpu::REG_D, mpu::REG_E,
+        mpu::REG_H, mpu::REG_L };
 };
 
 // =============================================================================

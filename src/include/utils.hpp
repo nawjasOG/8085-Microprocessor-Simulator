@@ -10,7 +10,11 @@
 
 /* standard c++ includes */
 #include <string>
+#include <string_view>
 
+// =============================================================================
+//                       namespace: utils (common project utilities)
+// =============================================================================
 namespace utils {
 
 /**
@@ -38,5 +42,31 @@ std::string get_first_word(const std::string& str);
 std::string to_hex(size_t value, size_t hex_digits);
 
 }  // namespace utils
+
+// =============================================================================
+//                       namespace: mpu (microprocessor-unit)
+// =============================================================================
+namespace mpu {
+// 8085 constants
+constexpr std::string_view DATA_X = "INT";
+constexpr std::string_view NO_OPERAND = "NA";
+
+// 8085 microprocessor registers
+constexpr std::string_view ACCUMULATOR = "A";
+constexpr std::string_view REG_B = "B";
+constexpr std::string_view REG_C = "C";
+constexpr std::string_view REG_D = "D";
+constexpr std::string_view REG_E = "E";
+constexpr std::string_view REG_H = "H";
+constexpr std::string_view REG_L = "L";
+constexpr std::string_view REG_M = "M";
+
+// 8085 microprocessor flags
+constexpr std::string_view SIGN_FLAG = "S";
+constexpr std::string_view ZERO_FLAG = "Z";
+constexpr std::string_view AUXIL_CARRY_FLAG = "AC";
+constexpr std::string_view PARITY_FLAG = "P";
+constexpr std::string_view CARRY_FLAG = "CY";
+}  // namespace mpu
 
 #endif  // __UTILS_HPP__

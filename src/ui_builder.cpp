@@ -75,9 +75,18 @@ void FlagsUI::add_ui() {
     }
 
     for (size_t flag_index = 0; flag_index < flag_names.size(); ++flag_index) {
-        const std::string flag_name = flag_names[flag_index] + ": 0";
+        const std::string flag_name =
+            std::string(flag_names[flag_index]) + ": 0";
         const size_t x_pos = flag_index * PER_FLAG_SIZE + 2;
         print(3, x_pos, flag_name);
+    }
+}
+
+void FlagsUI::refresh(const std::vector<uint8_t>& flags) {
+    for (size_t index = 0; index < flags.size(); ++index) {
+        size_t x_pos = index * PER_FLAG_SIZE + 2;
+        size_t size = flag_names[index].size();
+        print(3, x_pos+size+2, flags[index] == 0 ? "0" : "1");
     }
 }
 
@@ -105,7 +114,8 @@ void RegistersUI::add_ui() {
         vertical_line(3, x_pos_line, __length-4);
         x_pos_line > 0 ? print(2, x_pos_line, ACS_TTEE) : (void)0;
         x_pos_line > 0 ? print(__length-1, x_pos_line, ACS_BTEE) : (void)0;
-        const std::string register_name = register_names[reg_index] + ": 0x00";
+        const std::string register_name =
+            std::string(register_names[reg_index]) + ": 0x00";
         print(row_index, x_pos, register_name);
     }
     for (size_t index = 0; index < 5; ++index) {

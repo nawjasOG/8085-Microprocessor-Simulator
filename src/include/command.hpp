@@ -17,6 +17,7 @@
 
 /* project specific c++ includes */
 #include "model.hpp"
+#include "utils.hpp"
 
 // =============================================================================
 //                       Macros for instructions
@@ -65,8 +66,9 @@ class ICommand {
 
     std::vector<std::string> _operands;
     std::unordered_map<std::string, int> _opcode_db;
-    const std::vector<std::string> _registers =
-        {"B", "C", "D", "E", "H", "L", "M", "A"};
+    const std::vector<std::string_view> _registers = {
+        mpu::REG_B, mpu::REG_C, mpu::REG_D, mpu::REG_E, mpu::REG_H, mpu::REG_L,
+        mpu::REG_M, mpu::ACCUMULATOR };
 
  private:
     virtual void setup_opcode_table() = 0;

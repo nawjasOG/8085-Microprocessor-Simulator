@@ -6,32 +6,34 @@
  */
 
 /* standard c++ includes */
+#include <cassert>
 #include <cstdint>
 #include <string>
+#include <utility>
 #include <vector>
 
 /* project specific c++ includes */
 #include "include/model.hpp"
+#include "include/utils.hpp"
 
 // =============================================================================
 //                       CpuRegisters Impl
 // =============================================================================
-
 uint8_t CpuRegisters::accumulator() const {
-    return get_register("A");
+    return get_register(std::string(mpu::ACCUMULATOR));
 }
 void CpuRegisters::set_accumulator(uint8_t value) {
-    set_register("A", value);
+    set_register(std::string(mpu::ACCUMULATOR), value);
 }
 
 uint8_t CpuRegisters::get_register(const std::string& register_name) const {
-    // TODO: put some asserts for validation
+    assert(__registers.count(register_name));
     return __registers.at(register_name);
 }
 
 void CpuRegisters::set_register(const std::string& register_name,
                                 uint8_t value) {
-    // TODO: put some asserts for validation
+    assert(__registers.count(register_name));
     __registers[register_name] = value;
 }
 
@@ -39,6 +41,33 @@ std::vector<uint8_t> CpuRegisters::get_all_registers() const {
     std::vector<uint8_t> values;
     for (auto& item  : __registers) {
         values.push_back(item.second);
+    }
+    return values;
+}
+
+// =============================================================================
+//                       CpuFlags Impl
+// =============================================================================
+CpuFlags::CpuFlags() {
+    for (auto& flag : __flags_order) {
+        __flags.insert(std::make_pair(flag, 0));
+    }
+}
+
+void CpuFlags::reset_flag(const std::string_view& flag_name) {
+    assert(__flags.count(flag_name));
+    __flags[flag_name] = 0;
+}
+
+void CpuFlags::set_flag(const std::string_view& flag_name) {
+    assert(__flags.count(flag_name));
+    __flags[flag_name] = 1;
+}
+
+std::vector<uint8_t> CpuFlags::get_all_flags() const {
+    std::vector<uint8_t> values;
+    for (auto& flag  : __flags_order) {
+        values.push_back(__flags.at(flag));
     }
     return values;
 }

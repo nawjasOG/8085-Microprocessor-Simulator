@@ -16,6 +16,7 @@
 
 /* project specific c++ includes */
 #include "include/utils.hpp"
+#include "include/model.hpp"
 #include "include/command.hpp"
 
 // =============================================================================
@@ -94,12 +95,12 @@ uint8_t ICommand::lookup_opcode() {
     std::string key{};
     for (auto& operand : _operands) {
         if (ICommand::is_address(operand) != NumberType::Invalid) {
-            key += "INT";
+            key += std::string(mpu::DATA_X);
             continue;
         }
         key += operand;
     }
-    if (key.empty()) key = "NA";
+    if (key.empty()) key = std::string(mpu::NO_OPERAND);
     return _opcode_db.at(key);
 }
 
@@ -176,10 +177,14 @@ ADD::ADD(const std::string& instruction) : ICommand(instruction) {
 
 bool ADD::execute(Model& model) {
     std::string& register_name = _operands.at(0);
-    uint8_t value = model.registers.get_register(register_name);
     uint8_t accumulator = model.registers.accumulator();
-    // FIXME: handle overflow and carry case
-    model.registers.set_accumulator(accumulator + value);
+    uint8_t value = model.registers.get_register(register_name);
+    uint8_t result = accumulator + value;
+    model.flags.reset_flag(mpu::CARRY_FLAG);
+    if (result < accumulator) {
+        model.flags.set_flag(mpu::CARRY_FLAG);
+    }
+    model.registers.set_accumulator(result);
     // TODO: also do some book-keeping for undo to work
     return true;
 }
@@ -190,7 +195,8 @@ void ADD::undo(Model& model) {
 void ADD::setup_opcode_table() {
     uint8_t current_opcode = 0x80;
     for (auto& first_register : _registers) {
-        _opcode_db[first_register] = current_opcode++;
+        std::string key(first_register);
+        _opcode_db[key] = current_opcode++;
     }
 }
 
@@ -217,14 +223,16 @@ void MOV::setup_opcode_table() {
     uint8_t current_opcode = 0x40;
     for (auto& first_register : _registers) {
         for (auto& second_register : _registers) {
-            const std::string key = first_register + second_register;
+            const std::string key =
+                std::string(first_register) + std::string(second_register);
             _opcode_db[key] = current_opcode++;
         }
     }
     current_opcode = 0x77;
     _opcode_db["MA"] = current_opcode++;
     for (auto& second_register : _registers) {
-        const std::string key = "A" + second_register;
+        const std::string key =
+            std::string(mpu::ACCUMULATOR) + std::string(second_register);
         _opcode_db[key] = current_opcode++;
     }
 }
@@ -262,7 +270,8 @@ void MVI::undo(Model& model) {
 void MVI::setup_opcode_table() {
     uint8_t current_opcode = 0x06;
     for (auto& first_register : _registers) {
-        std::string key = first_register + "INT";
+        std::string key =
+            std::string(first_register) + std::string(mpu::DATA_X);
         _opcode_db[key] = current_opcode;
         current_opcode += 8;
     }

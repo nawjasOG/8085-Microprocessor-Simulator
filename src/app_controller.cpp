@@ -124,6 +124,7 @@ void AppController::run_program() {
 void AppController::notify_cpu_state() {
     CpuState state = {
         .registers = __model.registers.get_all_registers(),
+        .flags = __model.flags.get_all_flags(),
     };
     __view.render_cpu_view(state);
 }

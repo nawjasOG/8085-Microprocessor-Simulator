@@ -120,6 +120,7 @@ void ViewUI::render_memory_view(const MemoryState& state) {
 
 void ViewUI::render_cpu_view(const CpuState& state) {
     __register_ui->refresh(state.registers);
+    __flag_ui->refresh(state.flags);
 }
 
 void ViewUI::reset_cursor() {

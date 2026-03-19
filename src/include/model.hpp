@@ -43,11 +43,22 @@ class CpuFlags {
  public:
     CpuFlags();
 
-    void reset_flag(const std::string_view& flag_name);
-    void set_flag(const std::string_view& flag_name);
+    void reset_sign();
+    void set_sign();
+    void reset_zero();
+    void set_zero();
+    void reset_auxl_carry();
+    void set_auxl_carry();
+    void reset_parity();
+    void set_parity();
+    void reset_carry();
+    void set_carry();
     std::vector<uint8_t> get_all_flags() const;
 
  private:
+    void reset_flag(const std::string_view& flag_name);
+    void set_flag(const std::string_view& flag_name);
+
     std::map<std::string_view, uint8_t> __flags;
     std::vector<std::string_view> __flags_order = {
         mpu::SIGN_FLAG, mpu::ZERO_FLAG, mpu::AUXIL_CARRY_FLAG, mpu::PARITY_FLAG,

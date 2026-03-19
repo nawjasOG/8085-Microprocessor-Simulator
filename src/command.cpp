@@ -180,11 +180,16 @@ bool ADD::execute(Model& model) {
     uint8_t accumulator = model.registers.accumulator();
     uint8_t value = model.registers.get_register(register_name);
     uint8_t result = accumulator + value;
-    model.flags.reset_flag(mpu::CARRY_FLAG);
-    if (result < accumulator) {
-        model.flags.set_flag(mpu::CARRY_FLAG);
-    }
+
+    // setting different flags based on the result
+    result < accumulator ? model.flags.set_carry() : model.flags.reset_carry();
+    result == 0 ? model.flags.set_zero() : model.flags.reset_zero();
+    __builtin_popcount(result)%2 ?
+        model.flags.reset_parity() : model.flags.set_parity();
+    (result>>7)&1 ? model.flags.set_sign() : model.flags.reset_sign();
     model.registers.set_accumulator(result);
+
+    // book-keeping for undo operation
     // TODO: also do some book-keeping for undo to work
     return true;
 }

@@ -54,6 +54,46 @@ CpuFlags::CpuFlags() {
     }
 }
 
+void CpuFlags::reset_sign() {
+    reset_flag(mpu::SIGN_FLAG);
+}
+
+void CpuFlags::set_sign() {
+    set_flag(mpu::SIGN_FLAG);
+}
+
+void CpuFlags::reset_zero() {
+    reset_flag(mpu::ZERO_FLAG);
+}
+
+void CpuFlags::set_zero() {
+    set_flag(mpu::ZERO_FLAG);
+}
+
+void CpuFlags::reset_auxl_carry() {
+    reset_flag(mpu::AUXIL_CARRY_FLAG);
+}
+
+void CpuFlags::set_auxl_carry() {
+    set_flag(mpu::AUXIL_CARRY_FLAG);
+}
+
+void CpuFlags::reset_parity() {
+    reset_flag(mpu::PARITY_FLAG);
+}
+
+void CpuFlags::set_parity() {
+    set_flag(mpu::PARITY_FLAG);
+}
+
+void CpuFlags::reset_carry() {
+    reset_flag(mpu::CARRY_FLAG);
+}
+
+void CpuFlags::set_carry() {
+    set_flag(mpu::CARRY_FLAG);
+}
+
 void CpuFlags::reset_flag(const std::string_view& flag_name) {
     assert(__flags.count(flag_name));
     __flags[flag_name] = 0;

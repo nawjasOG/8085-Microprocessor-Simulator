@@ -114,16 +114,37 @@ uint16_t AppController::next_address() const {
 void AppController::run_program() {
     __view.save_cursor();
     __view.editor->cursor_mode(CURSOR_INVISIBLE);
-    size_t line = EditorUI::START_Y;
-    for (auto cmd : __source_code) {
-        __view.editor->highlight_line(line, 1, __view.editor->get_width()-2, 1);
-        std::this_thread::sleep_for(std::chrono::milliseconds(1500));
-        if (cmd->execute(__model)) {
-            notify_cpu_state();
+
+    auto run_helper = [&]() {
+        // first pass of program to scan for errors
+        bool has_errors = false;
+        for (auto cmd : __source_code) {
+            if (cmd->get_opcode() == 0x10) {
+                has_errors = true;
+                break;
+            }
         }
-        __view.editor->unhighlight_line(line, 1, __view.editor->get_width()-2);
-        ++line;
-    }
+        // popup alert if the program has errors
+        if (has_errors) {
+            __view.alert->popup();
+            return;
+        }
+        // no errors: execute the program
+        size_t line = EditorUI::START_Y;
+        for (auto cmd : __source_code) {
+            __view.editor->highlight_line(line, 1,
+                                __view.editor->get_width()-2, 1);
+            std::this_thread::sleep_for(std::chrono::milliseconds(1500));
+            if (cmd->execute(__model)) {
+                notify_cpu_state();
+            }
+            __view.editor->unhighlight_line(line, 1,
+                                __view.editor->get_width()-2);
+            ++line;
+        }
+    };
+
+    run_helper();
     __view.editor->cursor_mode(CURSOR_VISIBLE_NORMAL);
     __view.reset_cursor();
 }

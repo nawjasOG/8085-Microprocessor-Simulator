@@ -50,6 +50,7 @@ class ViewUI {
     void add_buttons();
     void add_registers();
     void add_flags();
+    void add_alert();
     ButtonType button_clicked() const;
     void render_cpu_view(const CpuState& state);
     void render_memory_view(const MemoryState& state);
@@ -57,6 +58,7 @@ class ViewUI {
     void save_cursor();
 
     std::unique_ptr<EditorUI> editor;
+    std::unique_ptr<AlertUI> alert;
 
  private:
     std::unique_ptr<TableUI> __address_ui, __machine_code_ui;

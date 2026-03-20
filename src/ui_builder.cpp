@@ -151,6 +151,27 @@ void ButtonUI::add_ui() {
 }
 
 // =============================================================================
+//                       AlertUI Impl
+// =============================================================================
+void AlertUI::add_ui() {
+    initialize();
+    size_t header_start_x = (__width - __header.size())/2;
+    set_attribute(COLOR_PAIR(3));
+    print(1, header_start_x, __header);
+    remove_attribute(COLOR_PAIR(3));
+    std::string key_press = "press any key to close";
+    header_start_x = (__width - key_press.size())/2;
+    print(2, header_start_x, key_press);
+    hide();
+}
+
+void AlertUI::popup() const {
+    show();
+    read();
+    hide();
+}
+
+// =============================================================================
 //                       Editor Impl
 // =============================================================================
 void EditorUI::update(int ch) {
@@ -191,6 +212,8 @@ UIBuilder::UIBuilder(std::unique_ptr<InterfaceUI> ui) : __ui(std::move(ui)) {}
 
 UIBuilder UIBuilder::create(const UIType& ui_type) {
     switch (ui_type) {
+        case UIType::Alert:
+            return UIBuilder(std::make_unique<AlertUI>());
         case UIType::Button:
             return UIBuilder(std::make_unique<ButtonUI>());
         case UIType::Flags:

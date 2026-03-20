@@ -23,6 +23,7 @@ void ViewUI::initialize() {
     add_buttons();
     add_registers();
     add_flags();
+    add_alert();
     reset_cursor();
 }
 
@@ -91,6 +92,14 @@ void ViewUI::add_flags() {
         .setStartPosition(REG_WIN_LENGTH, TABLE_WIDTH)
         .setHeader("FLAGS")
         .build<FlagsUI>();
+}
+
+void ViewUI::add_alert() {
+    alert = UIBuilder::create(UIType::Alert)
+        .setDimension(ALERT_LENGTH, ALERT_WIDTH)
+        .setStartPosition(TABLE_LENGTH/4, ADDRESS_COL_SIZE/2)
+        .setHeader("resolve the syntax error!")
+        .build<AlertUI>();
 }
 
 ButtonType ViewUI::button_clicked() const {

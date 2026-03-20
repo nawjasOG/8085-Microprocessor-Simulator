@@ -37,6 +37,9 @@
 #define PER_FLAG_SIZE 8
 #define TOTAL_FLAGS 5
 
+#define ALERT_LENGTH 4
+#define ALERT_WIDTH (ADDRESS_COL_SIZE/2 + SRC_CODE_SIZE + MACHINE_CODE_SIZE/2)
+
 #define BTN_LENGTH 3
 #define RUN_BTN_SIZE ADDRESS_COL_SIZE
 #define INSPECT_BTN_SIZE SRC_CODE_SIZE
@@ -104,6 +107,15 @@ class ButtonUI : public InterfaceUI {
 };
 
 // =============================================================================
+//                       Alert UI Class
+// =============================================================================
+class AlertUI : public InterfaceUI {
+ public:
+    void add_ui() final;
+    void popup() const;
+};
+
+// =============================================================================
 //                       Edtior UI Class
 // =============================================================================
 class EditorUI : public TableUI {
@@ -122,6 +134,7 @@ class EditorUI : public TableUI {
 //                       Builder Class for UI Elements
 // =============================================================================
 enum class UIType {
+    Alert,
     Button,
     Flags,
     Registers,

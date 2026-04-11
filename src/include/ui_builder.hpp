@@ -45,6 +45,9 @@
 #define INSPECT_BTN_SIZE SRC_CODE_SIZE
 #define QUIT_BTN_SIZE MACHINE_CODE_SIZE
 
+#define SPACE_ASCII 0x20
+#define COMMA_ASCII 0x2c
+
 // =============================================================================
 //                       Interface Class for UI
 // =============================================================================

@@ -199,10 +199,14 @@ std::string EditorUI::get_line() const {
     size_t current_y = get_line_number();
     size_t current_x = get_column_number();
     std::string instruction{};
+    bool is_empty = true;
     for (size_t x = START_X; x <= current_x; ++x) {
         instruction.append(1, get_char_at(current_y, x));
+        if (SPACE_ASCII != instruction.back()) {
+            is_empty = false;
+        }
     }
-    return instruction;
+    return is_empty? std::string() : instruction;
 }
 
 // =============================================================================

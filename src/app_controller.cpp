@@ -55,15 +55,19 @@ void AppController::run() {
 }
 
 void AppController::updateInstruction() {
+    size_t index = __view.editor->get_line_number() - EditorUI::START_Y;
     std::string instruction = __view.editor->get_line();
+    if (instruction.empty()) {
+        __source_code.erase(__source_code.begin()+index);
+        __view.clear_memory_view();
+        return;
+    }
     std::shared_ptr<ICommand> cmd = ICommand::get_command(instruction);
     cmd->set_address(next_address());
     CodeLine codeline = {
         .instruction = instruction,
         .cmd = cmd,
     };
-    size_t current_row = __view.editor->get_line_number();
-    size_t index = current_row - EditorUI::START_Y;
     if (index < __source_code.size()) {
         __source_code[index] = codeline;
     } else {
@@ -88,6 +92,7 @@ AppState AppController::handle_special_keys(int ch) {
 }
 
 void AppController::handle_enter() {
+    // TODO: stop moving to next line if current line is empty
     __view.editor->move_to_next_line();
 }
 
@@ -95,14 +100,11 @@ void AppController::handle_backspace() {
     size_t current_row = __view.editor->get_line_number();
     size_t current_col = __view.editor->get_column_number();
     if (current_col == EditorUI::START_X) {
-        // FIXME: delete from source code in case of first line as well
-        if (current_row == EditorUI::START_Y) return;
         size_t index = current_row - EditorUI::START_Y;
-        assert(index < __source_code.size());
-        __source_code.erase(__source_code.begin()+index);
-        __view.clear_memory_view();
-        auto& last = __source_code[index-1];
-        __view.editor->move(current_row-1, last.instruction.size()+1);
+        if (index > 0) {
+            auto& last = __source_code[index-1];
+            __view.editor->move(current_row-1, last.instruction.size()+1);
+        }
         return;
     }
     __view.editor->delete_last_char();
@@ -201,5 +203,5 @@ void AppController::notify_memory_state() {
 }
 
 bool AppController::valid_character(int ch) const {
-    return std::isalnum(ch) || ch == ' ' || ch == ',';
+    return std::isalnum(ch) || ch == SPACE_ASCII || ch == COMMA_ASCII;
 }

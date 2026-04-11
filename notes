@@ -1,0 +1,11 @@
+1. [rejected] use Observer pattern for state changes (register, flags, memory)
+2. [done] make a single common function for state changes:
+    e.g. __view.update(state) can be have common implementation like:
+                ViewState state = {
+                    .machine_code = cmd->get_machine_code(),
+                    .address = cmd->get_address(),
+                };
+                __view.update(state);
+        - this can then be called for both handle_enter(), handle_backspace(), etc.
+
+3. [x] backspace and enter are becoming complicated too complicated due to machine code, address and source code being stored on enter press - ignore not doing

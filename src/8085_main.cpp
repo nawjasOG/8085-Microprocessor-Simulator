@@ -9,9 +9,9 @@
 #include <iostream>
 
 /* project specific includes */
-#include "include/app_controller.hpp"
-#include "include/view.hpp"
-#include "include/model.hpp"
+#include "app_controller.hpp"
+#include "view.hpp"
+#include "model.hpp"
 
 void app() {
     ViewUI view;

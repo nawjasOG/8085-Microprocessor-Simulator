@@ -15,8 +15,8 @@
 #include <vector>
 
 /* project specific c++ includes */
-#include "include/utils.hpp"
-#include "include/ui_builder.hpp"
+#include "utils.hpp"
+#include "ui_builder.hpp"
 
 // =============================================================================
 //                       InterfaceUI Impl

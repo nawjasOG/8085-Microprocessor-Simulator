@@ -13,8 +13,8 @@
 #include <vector>
 
 /* project specific c++ includes */
-#include "include/model.hpp"
-#include "include/utils.hpp"
+#include "model.hpp"
+#include "utils.hpp"
 
 // =============================================================================
 //                       CpuRegisters Impl

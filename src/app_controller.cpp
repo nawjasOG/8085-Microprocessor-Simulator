@@ -18,11 +18,11 @@
 #include <ncurses_facade.hpp>
 
 /* project specific c++ includes */
-#include "include/app_controller.hpp"
-#include "include/ui_builder.hpp"
-#include "include/view.hpp"
-#include "include/model.hpp"
-#include "include/command.hpp"
+#include "app_controller.hpp"
+#include "ui_builder.hpp"
+#include "view.hpp"
+#include "model.hpp"
+#include "instructions/command.hpp"
 
 // =============================================================================
 //                       AppController Impl

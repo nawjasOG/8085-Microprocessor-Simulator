@@ -17,7 +17,7 @@
 /* project specific c++ includes */
 #include "view.hpp"
 #include "model.hpp"
-#include "command.hpp"
+#include "instructions/command.hpp"
 
 // =============================================================================
 //                       AppState enum class

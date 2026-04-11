@@ -12,7 +12,7 @@
 #include <string>
 
 /* project specific c++ includes */
-#include "include/utils.hpp"
+#include "utils.hpp"
 
 namespace utils {
 

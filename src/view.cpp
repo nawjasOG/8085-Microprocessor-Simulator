@@ -11,9 +11,9 @@
 #include <memory>
 
 /* project specific c++ includes */
-#include "include/utils.hpp"
-#include "include/view.hpp"
-#include "include/ui_builder.hpp"
+#include "utils.hpp"
+#include "view.hpp"
+#include "ui_builder.hpp"
 
 // =============================================================================
 //                       ViewUI Impl

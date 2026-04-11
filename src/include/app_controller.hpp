@@ -10,6 +10,8 @@
 
 /* standard c++ includes */
 #include <cstdint>
+#include <memory>
+#include <string>
 #include <vector>
 
 /* project specific c++ includes */
@@ -26,6 +28,14 @@ enum class AppState {
 };
 
 // =============================================================================
+//                       AppState enum class
+// =============================================================================
+struct CodeLine {
+    std::string instruction;
+    std::shared_ptr<ICommand> cmd;
+};
+
+// =============================================================================
 //                       App Controller (Presenter in MVP)
 // =============================================================================
 class AppController {
@@ -33,6 +43,7 @@ class AppController {
     AppController(ViewUI& view, Model& model);
 
     void run();
+    void updateInstruction();
     AppState handle_special_keys(int ch);
     void handle_enter();
     void handle_backspace();
@@ -46,7 +57,7 @@ class AppController {
  private:
     ViewUI& __view;
     Model& __model;
-    std::vector<std::shared_ptr<ICommand>> __source_code;
+    std::vector<CodeLine> __source_code;
 };
 
 #endif  // __APP_CONTROLLER_HPP__

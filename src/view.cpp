@@ -118,13 +118,13 @@ ButtonType ViewUI::button_clicked() const {
 }
 
 void ViewUI::render_memory_view(const MemoryState& state) {
+    clear_memory_view();
     const size_t current_line = editor->get_line_number();
     size_t current_pos = 2;
-    if (state.machine_code[0] == 0x10) {
+    if (state.machine_code[0] == INVALID_INSTR) {
         __machine_code_ui->set_attribute(COLOR_PAIR(3));
         __machine_code_ui->print(current_line, current_pos, "SYNTAX ERROR");
         __machine_code_ui->remove_attribute(COLOR_PAIR(3));
-        editor->move_to_next_line();
         return;
     }
     for (auto& machine_code : state.machine_code) {
@@ -133,7 +133,6 @@ void ViewUI::render_memory_view(const MemoryState& state) {
         current_pos += code.size() + 1;
     }
     __address_ui->print(current_line, 2, utils::to_hex(state.address, 4));
-    editor->move_to_next_line();
 }
 
 void ViewUI::render_cpu_view(const CpuState& state) {
@@ -148,4 +147,16 @@ void ViewUI::reset_cursor() {
 void ViewUI::save_cursor() {
     __cursor_y = editor->get_line_number();
     __cursor_x = editor->get_column_number();
+}
+
+void ViewUI::clear_memory_view() {
+    const size_t current_line = editor->get_line_number();
+    // cleanup the machine code ui
+    for (size_t index = 1; index < MACHINE_CODE_SIZE-1; ++index) {
+        __machine_code_ui->print(current_line, index, " ");
+    }
+    // cleanup the address ui
+    for (size_t index = 1; index < ADDRESS_COL_SIZE-1; ++index) {
+        __address_ui->print(current_line, index, " ");
+    }
 }

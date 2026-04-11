@@ -6,6 +6,7 @@
  */
 
 /* standard c++ includes */
+#include <cassert>
 #include <cctype>
 #include <chrono>
 #include <cstdint>
@@ -18,6 +19,7 @@
 
 /* project specific c++ includes */
 #include "include/app_controller.hpp"
+#include "include/ui_builder.hpp"
 #include "include/view.hpp"
 #include "include/model.hpp"
 #include "include/command.hpp"
@@ -48,7 +50,26 @@ void AppController::run() {
             }
         }
         __view.editor->update(ch);
+        updateInstruction();
     }
+}
+
+void AppController::updateInstruction() {
+    std::string instruction = __view.editor->get_line();
+    std::shared_ptr<ICommand> cmd = ICommand::get_command(instruction);
+    cmd->set_address(next_address());
+    CodeLine codeline = {
+        .instruction = instruction,
+        .cmd = cmd,
+    };
+    size_t current_row = __view.editor->get_line_number();
+    size_t index = current_row - EditorUI::START_Y;
+    if (index < __source_code.size()) {
+        __source_code[index] = codeline;
+    } else {
+        __source_code.push_back(codeline);
+    }
+    notify_memory_state();
 }
 
 AppState AppController::handle_special_keys(int ch) {
@@ -67,22 +88,25 @@ AppState AppController::handle_special_keys(int ch) {
 }
 
 void AppController::handle_enter() {
-    std::string instruction = __view.editor->get_line();
-    std::shared_ptr<ICommand> cmd = ICommand::get_command(instruction);
-    cmd->set_address(next_address());
-    __source_code.push_back(cmd);
-    notify_memory_state();
+    __view.editor->move_to_next_line();
 }
 
 void AppController::handle_backspace() {
     size_t current_row = __view.editor->get_line_number();
     size_t current_col = __view.editor->get_column_number();
     if (current_col == EditorUI::START_X) {
+        // FIXME: delete from source code in case of first line as well
         if (current_row == EditorUI::START_Y) return;
-        // TODO: handle this case
+        size_t index = current_row - EditorUI::START_Y;
+        assert(index < __source_code.size());
+        __source_code.erase(__source_code.begin()+index);
+        __view.clear_memory_view();
+        auto& last = __source_code[index-1];
+        __view.editor->move(current_row-1, last.instruction.size()+1);
         return;
     }
     __view.editor->delete_last_char();
+    updateInstruction();
 }
 
 AppState AppController::handle_click() {
@@ -104,10 +128,16 @@ AppState AppController::handle_click() {
 }
 
 uint16_t AppController::next_address() const {
-    if (__source_code.empty()) return 0;
-    auto last = __source_code.back();
-    const uint16_t current_addr = last->get_address();
-    const uint16_t next_addr = current_addr + last->get_machine_code().size();
+    size_t index = __view.editor->get_line_number() - EditorUI::START_Y;
+    if (index == 0) return 0;
+    assert(index-1 < __source_code.size());
+    auto& last = __source_code[index-1];
+    const uint16_t current_addr = last.cmd->get_address();
+    if (last.cmd->get_opcode() == INVALID_INSTR) {
+        return current_addr;
+    }
+    const uint16_t next_addr =
+        current_addr + last.cmd->get_machine_code().size();
     return next_addr;
 }
 
@@ -118,8 +148,8 @@ void AppController::run_program() {
     auto run_helper = [&]() {
         // first pass of program to scan for errors
         bool has_errors = false;
-        for (auto cmd : __source_code) {
-            if (cmd->get_opcode() == 0x10) {
+        for (auto& codeline : __source_code) {
+            if (codeline.cmd->get_opcode() == INVALID_INSTR) {
                 has_errors = true;
                 break;
             }
@@ -131,11 +161,11 @@ void AppController::run_program() {
         }
         // no errors: execute the program
         size_t line = EditorUI::START_Y;
-        for (auto cmd : __source_code) {
+        for (auto& codeline : __source_code) {
             __view.editor->highlight_line(line, 1,
                                 __view.editor->get_width()-2, 1);
             std::this_thread::sleep_for(std::chrono::milliseconds(1500));
-            if (cmd->execute(__model)) {
+            if (codeline.cmd->execute(__model)) {
                 notify_cpu_state();
             }
             __view.editor->unhighlight_line(line, 1,
@@ -162,10 +192,10 @@ void AppController::notify_memory_state() {
         // TODO: handle this case
         return;
     }
-    auto cmd = __source_code.back();
+    auto& codeline = __source_code.back();
     MemoryState state = {
-        .machine_code = cmd->get_machine_code(),
-        .address = cmd->get_address(),
+        .machine_code = codeline.cmd->get_machine_code(),
+        .address = codeline.cmd->get_address(),
     };
     __view.render_memory_view(state);
 }

@@ -17,6 +17,8 @@
 /* project specific c++ includes */
 #include "ui_builder.hpp"
 
+#define INVALID_INSTR 0x10
+
 // =============================================================================
 //                       ButtonType Enum class
 // =============================================================================
@@ -56,6 +58,8 @@ class ViewUI {
     void render_memory_view(const MemoryState& state);
     void reset_cursor();
     void save_cursor();
+
+    void clear_memory_view();
 
     std::unique_ptr<EditorUI> editor;
     std::unique_ptr<AlertUI> alert;

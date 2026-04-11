@@ -9,6 +9,7 @@
 #include <cassert>
 #include <cstdint>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -86,12 +87,21 @@ void CpuFlags::set_parity() {
     set_flag(mpu::PARITY_FLAG);
 }
 
+uint8_t CpuFlags::get_carry() {
+    return get_flag(mpu::CARRY_FLAG);
+}
+
 void CpuFlags::reset_carry() {
     reset_flag(mpu::CARRY_FLAG);
 }
 
 void CpuFlags::set_carry() {
     set_flag(mpu::CARRY_FLAG);
+}
+
+uint8_t CpuFlags::get_flag(const std::string_view& flag_name) {
+    assert(__flags.count(flag_name));
+    return __flags[flag_name];
 }
 
 void CpuFlags::reset_flag(const std::string_view& flag_name) {

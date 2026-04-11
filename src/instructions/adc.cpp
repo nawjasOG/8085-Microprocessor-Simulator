@@ -14,24 +14,25 @@
 /* project specific c++ includes */
 #include "model.hpp"
 #include "instructions/command.hpp"
-#include "instructions/sub.hpp"
+#include "instructions/adc.hpp"
 
 // =============================================================================
-//                       SUB Impl
+//                       ADC Impl
 // =============================================================================
-SUB::SUB(const std::string& instruction) : ICommand(instruction) {
+ADC::ADC(const std::string& instruction) : ICommand(instruction) {
     parse(Parser::SingleOperand);
 }
 
-bool SUB::execute(Model& model) {
+bool ADC::execute(Model& model) {
     std::string& register_name = _operands.at(0);
     uint8_t accumulator = model.registers.accumulator();
     // FIXME: handle when operand is M (no such register)
     uint8_t value = model.registers.get_register(register_name);
-    uint8_t result = accumulator - value;
+    uint8_t carry = model.flags.get_carry();
+    uint8_t result = accumulator + value + carry;
 
     // setting different flags based on the result
-    // result < accumulator ? model.flags.set_carry() : model.flags.reset_carry();
+    result < accumulator ? model.flags.set_carry() : model.flags.reset_carry();
     result == 0 ? model.flags.set_zero() : model.flags.reset_zero();
     __builtin_popcount(result)%2 ?
         model.flags.reset_parity() : model.flags.set_parity();
@@ -43,11 +44,11 @@ bool SUB::execute(Model& model) {
     return true;
 }
 
-void SUB::undo(Model& model) {
+void ADC::undo(Model& model) {
 }
 
-void SUB::setup_opcode_table() {
-    uint8_t current_opcode = 0x90;
+void ADC::setup_opcode_table() {
+    uint8_t current_opcode = 0x88;
     for (auto& first_register : _registers) {
         std::string key(first_register);
         _opcode_db[key] = current_opcode++;

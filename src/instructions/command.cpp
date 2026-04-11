@@ -17,6 +17,7 @@
 #include "utils.hpp"
 #include "instructions/command.hpp"
 #include "instructions/invalid.hpp"
+#include "instructions/adc.hpp"
 #include "instructions/add.hpp"
 #include "instructions/mov.hpp"
 #include "instructions/mvi.hpp"
@@ -31,7 +32,9 @@ ICommand::ICommand(const std::string& instruction)
 std::shared_ptr<ICommand> ICommand::get_command(std::string instruction) {
     std::string command = utils::get_first_word(instruction);
     try {
-        if (command == "ADD") {
+        if (command == "ADC") {
+            return std::make_shared<ADC>(instruction);
+        } else if (command == "ADD") {
             return std::make_shared<ADD>(instruction);
         } else if (command == "MOV") {
             return std::make_shared<MOV>(instruction);

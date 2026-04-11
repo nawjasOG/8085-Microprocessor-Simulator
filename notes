@@ -8,4 +8,8 @@
                 __view.update(state);
         - this can then be called for both handle_enter(), handle_backspace(), etc.
 
-3. [x] backspace and enter are becoming complicated too complicated due to machine code, address and source code being stored on enter press - ignore not doing
+3. [rejected] backspace and enter are becoming complicated too complicated due to machine code, address and source code being stored on enter press
+4. [ ] for jump type of instruction, ICommand::execute can return pair<status, next_address>
+    if the next instrcution in source_code has the same next_address, carry on
+    otherwise, find the instruction with that address and execute from there
+5. [ ] see if loop can be detected using above method

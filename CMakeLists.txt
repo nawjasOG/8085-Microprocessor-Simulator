@@ -15,11 +15,12 @@ set(SOURCE_FILES
     ${SOURCE_DIR}/view.cpp
     ${SOURCE_DIR}/model.cpp
     ${SOURCE_DIR}/instructions/command.cpp
+    ${SOURCE_DIR}/instructions/invalid.cpp
+    ${SOURCE_DIR}/instructions/adc.cpp
     ${SOURCE_DIR}/instructions/add.cpp
-    ${SOURCE_DIR}/instructions/sub.cpp
     ${SOURCE_DIR}/instructions/mov.cpp
     ${SOURCE_DIR}/instructions/mvi.cpp
-    ${SOURCE_DIR}/instructions/invalid.cpp
+    ${SOURCE_DIR}/instructions/sub.cpp
     ${SOURCE_DIR}/app_controller.cpp
     ${SOURCE_DIR}/8085_main.cpp
 )

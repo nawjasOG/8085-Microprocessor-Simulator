@@ -20,6 +20,7 @@ set(SOURCE_FILES
     ${SOURCE_DIR}/instructions/add.cpp
     ${SOURCE_DIR}/instructions/mov.cpp
     ${SOURCE_DIR}/instructions/mvi.cpp
+    ${SOURCE_DIR}/instructions/sbb.cpp
     ${SOURCE_DIR}/instructions/sub.cpp
     ${SOURCE_DIR}/app_controller.cpp
     ${SOURCE_DIR}/8085_main.cpp

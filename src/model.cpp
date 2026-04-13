@@ -18,8 +18,21 @@
 #include "utils.hpp"
 
 // =============================================================================
+//                       Memory Impl
+// =============================================================================
+uint8_t Memory::get_memory(uint16_t address) {
+    return __memory[address];
+}
+
+void Memory::set_memory(uint16_t address, uint8_t value) {
+    __memory[address] = value;
+}
+
+// =============================================================================
 //                       CpuRegisters Impl
 // =============================================================================
+CpuRegisters::CpuRegisters(Memory& memory) : __memory(memory) {}
+
 uint8_t CpuRegisters::accumulator() const {
     return get_register(std::string(mpu::ACCUMULATOR));
 }
@@ -28,12 +41,19 @@ void CpuRegisters::set_accumulator(uint8_t value) {
 }
 
 uint8_t CpuRegisters::get_register(const std::string& register_name) const {
+    if (register_name == "M") {
+        return __memory.get_memory(__get_hl_address());
+    }
     assert(__registers.count(register_name));
     return __registers.at(register_name);
 }
 
 void CpuRegisters::set_register(const std::string& register_name,
                                 uint8_t value) {
+    if (register_name == "M") {
+        __memory.set_memory(__get_hl_address(), value);
+        return;
+    }
     assert(__registers.count(register_name));
     __registers[register_name] = value;
 }
@@ -44,6 +64,13 @@ std::vector<uint8_t> CpuRegisters::get_all_registers() const {
         values.push_back(item.second);
     }
     return values;
+}
+
+uint16_t CpuRegisters::__get_hl_address() const {
+    uint8_t lower = __registers.at(mpu::REG_L);
+    uint8_t higher = __registers.at(mpu::REG_H);
+    uint16_t address = (higher << 8) | lower;
+    return address;
 }
 
 // =============================================================================
@@ -120,11 +147,4 @@ std::vector<uint8_t> CpuFlags::get_all_flags() const {
         values.push_back(__flags.at(flag));
     }
     return values;
-}
-
-// =============================================================================
-//                       Memory Impl
-// =============================================================================
-void Memory::set_memory(uint16_t address, uint8_t value) {
-    __memory[address] = value;
 }

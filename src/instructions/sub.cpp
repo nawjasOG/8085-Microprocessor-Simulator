@@ -26,12 +26,11 @@ SUB::SUB(const std::string& instruction) : ICommand(instruction) {
 bool SUB::execute(Model& model) {
     std::string& register_name = _operands.at(0);
     uint8_t accumulator = model.registers.accumulator();
-    // FIXME: handle when operand is M (no such register)
     uint8_t value = model.registers.get_register(register_name);
     uint8_t result = accumulator - value;
 
     // setting different flags based on the result
-    // result < accumulator ? model.flags.set_carry() : model.flags.reset_carry();
+    result > accumulator ? model.flags.set_carry() : model.flags.reset_carry();
     result == 0 ? model.flags.set_zero() : model.flags.reset_zero();
     __builtin_popcount(result)%2 ?
         model.flags.reset_parity() : model.flags.set_parity();

@@ -21,6 +21,7 @@
 #include "instructions/add.hpp"
 #include "instructions/mov.hpp"
 #include "instructions/mvi.hpp"
+#include "instructions/sbb.hpp"
 #include "instructions/sub.hpp"
 
 // =============================================================================
@@ -40,6 +41,8 @@ std::shared_ptr<ICommand> ICommand::get_command(std::string instruction) {
             return std::make_shared<MOV>(instruction);
         } else if (command == "MVI") {
             return std::make_shared<MVI>(instruction);
+        } else if (command == "SBB") {
+            return std::make_shared<SBB>(instruction);
         } else if (command == "SUB") {
             return std::make_shared<SUB>(instruction);
         }

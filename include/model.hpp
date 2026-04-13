@@ -44,6 +44,8 @@ class CpuRegisters {
     void set_accumulator(uint8_t value);
     uint8_t get_register(const std::string& register_name) const;
     void set_register(const std::string& register_name, uint8_t value);
+    uint16_t get_pair_address(const std::string& first_register,
+                              const std::string& second_register) const;
     std::vector<uint8_t> get_all_registers() const;
 
  private:

@@ -41,7 +41,7 @@ void CpuRegisters::set_accumulator(uint8_t value) {
 }
 
 uint8_t CpuRegisters::get_register(const std::string& register_name) const {
-    if (register_name == "M") {
+    if (register_name == mpu::REG_M) {
         return __memory.get_memory(__get_hl_address());
     }
     assert(__registers.count(register_name));
@@ -58,6 +58,14 @@ void CpuRegisters::set_register(const std::string& register_name,
     __registers[register_name] = value;
 }
 
+uint16_t CpuRegisters::get_pair_address(const std::string& first_register,
+                                    const std::string& second_register) const {
+    uint8_t higher = __registers.at(first_register);
+    uint8_t lower = __registers.at(second_register);
+    uint16_t address = (higher << 8) | lower;
+    return address;
+}
+
 std::vector<uint8_t> CpuRegisters::get_all_registers() const {
     std::vector<uint8_t> values;
     for (auto& item  : __registers) {
@@ -67,10 +75,7 @@ std::vector<uint8_t> CpuRegisters::get_all_registers() const {
 }
 
 uint16_t CpuRegisters::__get_hl_address() const {
-    uint8_t lower = __registers.at(mpu::REG_L);
-    uint8_t higher = __registers.at(mpu::REG_H);
-    uint16_t address = (higher << 8) | lower;
-    return address;
+    return get_pair_address(std::string(mpu::REG_H), std::string(mpu::REG_L));
 }
 
 // =============================================================================

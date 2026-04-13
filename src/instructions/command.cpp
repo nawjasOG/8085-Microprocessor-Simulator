@@ -19,6 +19,10 @@
 #include "instructions/invalid.hpp"
 #include "instructions/adc.hpp"
 #include "instructions/add.hpp"
+#include "instructions/dcr.hpp"
+#include "instructions/dcx.hpp"
+#include "instructions/inr.hpp"
+#include "instructions/inx.hpp"
 #include "instructions/mov.hpp"
 #include "instructions/mvi.hpp"
 #include "instructions/sbb.hpp"
@@ -37,6 +41,14 @@ std::shared_ptr<ICommand> ICommand::get_command(std::string instruction) {
             return std::make_shared<ADC>(instruction);
         } else if (command == "ADD") {
             return std::make_shared<ADD>(instruction);
+        } else if (command == "DCR") {
+            return std::make_shared<DCR>(instruction);
+        } else if (command == "DCX") {
+            return std::make_shared<DCX>(instruction);
+        } else if (command == "INR") {
+            return std::make_shared<INR>(instruction);
+        } else if (command == "INX") {
+            return std::make_shared<INX>(instruction);
         } else if (command == "MOV") {
             return std::make_shared<MOV>(instruction);
         } else if (command == "MVI") {

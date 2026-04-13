@@ -18,6 +18,10 @@ set(SOURCE_FILES
     ${SOURCE_DIR}/instructions/invalid.cpp
     ${SOURCE_DIR}/instructions/adc.cpp
     ${SOURCE_DIR}/instructions/add.cpp
+    ${SOURCE_DIR}/instructions/dcr.cpp
+    ${SOURCE_DIR}/instructions/dcx.cpp
+    ${SOURCE_DIR}/instructions/inr.cpp
+    ${SOURCE_DIR}/instructions/inx.cpp
     ${SOURCE_DIR}/instructions/mov.cpp
     ${SOURCE_DIR}/instructions/mvi.cpp
     ${SOURCE_DIR}/instructions/sbb.cpp

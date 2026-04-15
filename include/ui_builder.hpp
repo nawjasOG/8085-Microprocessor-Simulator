@@ -102,6 +102,18 @@ class RegistersUI : public InterfaceUI {
 };
 
 // =============================================================================
+//                       Special Registers UI Class
+// =============================================================================
+class SpecialRegistersUI : public InterfaceUI {
+ public:
+    void add_ui() final;
+    void refresh(const uint16_t pc, const uint16_t sp);
+
+ private:
+    const std::vector<std::string_view> register_names = {mpu::PC, mpu::SP};
+};
+
+// =============================================================================
 //                       Buttons UI Class
 // =============================================================================
 class ButtonUI : public InterfaceUI {
@@ -141,6 +153,7 @@ enum class UIType {
     Button,
     Flags,
     Registers,
+    SpecialRegisters,
     Table,
     Editor,
 };

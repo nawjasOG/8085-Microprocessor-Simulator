@@ -51,6 +51,10 @@ namespace mpu {
 constexpr std::string_view DATA_X = "INT";
 constexpr std::string_view NO_OPERAND = "NA";
 
+// 8085 microprocessor special registers
+constexpr std::string_view PC = "PC";
+constexpr std::string_view SP = "SP";
+
 // 8085 microprocessor registers
 constexpr std::string_view ACCUMULATOR = "A";
 constexpr std::string_view REG_B = "B";

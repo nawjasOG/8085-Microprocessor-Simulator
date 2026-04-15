@@ -85,6 +85,12 @@ void ViewUI::add_registers() {
         .setStartPosition(0, TABLE_WIDTH)
         .setHeader("REGISTERS")
         .build<RegistersUI>();
+
+    __special_register_ui = UIBuilder::create(UIType::SpecialRegisters)
+        .setDimension(FLAG_WIN_LENGTH, FLAG_WIN_WIDTH)
+        .setStartPosition(REG_WIN_LENGTH + FLAG_WIN_LENGTH, TABLE_WIDTH)
+        .setHeader("SPECIAL REGISTER")
+        .build<SpecialRegistersUI>();
 }
 
 void ViewUI::add_flags() {
@@ -139,6 +145,8 @@ void ViewUI::render_memory_view(const MemoryState& state) {
 void ViewUI::render_cpu_view(const CpuState& state) {
     __register_ui->refresh(state.registers);
     __flag_ui->refresh(state.flags);
+    // FIXME: use actual values of pc and sp
+    __special_register_ui->refresh(65535, 65000);
 }
 
 void ViewUI::reset_cursor() {

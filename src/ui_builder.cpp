@@ -135,6 +135,46 @@ void RegistersUI::refresh(const std::vector<uint8_t>& registers) {
 }
 
 // =============================================================================
+//                       SpecialRegistersUI Impl
+// =============================================================================
+void SpecialRegistersUI::add_ui() {
+    initialize();
+    horizontal_line(2, 1, __width-2);
+    print(2, 0, ACS_LTEE);
+    print(2, __width-1, ACS_RTEE);
+    size_t header_start_x = (__width - __header.size())/2;
+    set_attribute(COLOR_PAIR(2));
+    print(1, header_start_x, __header);
+    remove_attribute(COLOR_PAIR(2));
+
+    for (size_t reg_index = 1; reg_index < register_names.size(); ++reg_index) {
+        size_t x_pos_line = __width/2;
+        vertical_line(3, x_pos_line, __length-4);
+        print(2, x_pos_line, ACS_TTEE);
+        print(__length-1, x_pos_line, ACS_BTEE);
+    }
+
+    for (size_t reg_index = 0; reg_index < register_names.size(); ++reg_index) {
+        const std::string register_name =
+            std::string(register_names[reg_index]) + ": 0x0000";
+        const size_t x_pos = reg_index * (__width/2) + (__width/2 - 10)/2;
+        print(3, x_pos, register_name);
+    }
+}
+
+void SpecialRegistersUI::refresh(const uint16_t pc, const uint16_t sp) {
+    // refresh program counter
+    size_t x_pos = (__width/2 - 10)/2;
+    size_t size = register_names[0].size();
+    print(3, x_pos+size+2, utils::to_hex(pc, 4));
+
+    // refresh stack pointer
+    x_pos = __width/2 + (__width/2 - 10)/2;
+    size = register_names[1].size();
+    print(3, x_pos+size+2, utils::to_hex(sp, 4));
+}
+
+// =============================================================================
 //                       ButtonUI Impl
 // =============================================================================
 void ButtonUI::add_ui() {
@@ -224,6 +264,8 @@ UIBuilder UIBuilder::create(const UIType& ui_type) {
             return UIBuilder(std::make_unique<FlagsUI>());
         case UIType::Registers:
             return UIBuilder(std::make_unique<RegistersUI>());
+        case UIType::SpecialRegisters:
+            return UIBuilder(std::make_unique<SpecialRegistersUI>());
         case UIType::Table:
             return UIBuilder(std::make_unique<TableUI>());
         case UIType::Editor:

@@ -14,6 +14,7 @@
 #include "utils.hpp"
 #include "view.hpp"
 #include "ui_builder.hpp"
+#include "instructions/command.hpp"
 
 // =============================================================================
 //                       ViewUI Impl

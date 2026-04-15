@@ -152,28 +152,23 @@ void AppController::run_program() {
     __view.editor->cursor_mode(CURSOR_INVISIBLE);
 
     auto run_helper = [&]() {
-        // first pass of program to scan for errors
-        bool has_errors = false;
-        for (auto& codeline : __source_code) {
-            if (codeline.cmd->get_opcode() == INVALID_INSTR) {
-                has_errors = true;
-                break;
-            }
-        }
+        CodeGraph code_graph(__source_code, __model);
+
         // popup alert if the program has errors
-        if (has_errors) {
+        if (!code_graph.is_valid_program()) {
             __view.alert->popup();
             return;
         }
+
         // no errors: execute the program
         size_t line = EditorUI::START_Y;
-        for (auto& codeline : __source_code) {
+        InstrNode_h program_counter = code_graph.get_program_counter();
+        while (program_counter) {
             __view.editor->highlight_line(line, 1,
                                 __view.editor->get_width()-2, 1);
             std::this_thread::sleep_for(std::chrono::milliseconds(1500));
-            if (codeline.cmd->execute(__model)) {
-                notify_cpu_state();
-            }
+            program_counter = code_graph.run_next_instr(program_counter);
+            notify_cpu_state();
             __view.editor->unhighlight_line(line, 1,
                                 __view.editor->get_width()-2);
             ++line;

@@ -9,6 +9,8 @@
 #define __CODE_GRAPH_HPP__
 
 /* standard c++ includes */
+#include <cstdint>
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -17,6 +19,7 @@
 
 /* project specific c++ includes */
 #include "instructions/command.hpp"
+#include "model.hpp"
 
 // =============================================================================
 //                       CodeLine struct
@@ -42,9 +45,17 @@ typedef std::shared_ptr<InstrNode> InstrNode_h;
 // =============================================================================
 class CodeGraph {
  public:
-    explicit CodeGraph(const std::vector<CodeLine>& source_code);
+    CodeGraph(const std::vector<CodeLine>& source_code, Model& model);
 
-    bool run();
+    bool is_valid_program();
+    InstrNode_h get_program_counter();
+    InstrNode_h run_next_instr(InstrNode_h prev);
+
+ private:
+    Model& __model;
+    InstrNode_h __root = nullptr;
+    std::map<uint16_t, InstrNode_h> __address_to_instr;
+    bool __valid_program = true;
 };
 
 #endif  // __CODE_GRAPH_HPP__

@@ -73,6 +73,10 @@ std::vector<uint8_t> ICommand::get_machine_code() {
     return __machine_code;
 }
 
+size_t ICommand::machine_code_size() {
+    return __machine_code.size();
+}
+
 uint8_t ICommand::get_opcode() {
     return __opcode;
 }

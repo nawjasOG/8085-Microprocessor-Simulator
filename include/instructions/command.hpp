@@ -22,6 +22,7 @@
 // =============================================================================
 //                       Macros for instructions
 // =============================================================================
+#define INVALID_INSTR 0x10
 #define INSTR_SEPARATOR 0x20
 #define OPERAND_SEPARATOR 0x2c
 
@@ -55,6 +56,7 @@ class ICommand {
     virtual void undo(Model& model) = 0;
     uint16_t get_address();
     std::vector<uint8_t> get_machine_code();
+    size_t machine_code_size();
     uint8_t get_opcode();
     void set_address(uint16_t address);
 

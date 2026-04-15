@@ -10,14 +10,12 @@
 
 /* standard c++ includes */
 #include <cstdint>
-#include <memory>
-#include <string>
 #include <vector>
 
 /* project specific c++ includes */
 #include "view.hpp"
 #include "model.hpp"
-#include "instructions/command.hpp"
+#include "code_graph.hpp"
 
 // =============================================================================
 //                       AppState enum class
@@ -25,14 +23,6 @@
 enum class AppState {
     Normal,
     Quit,
-};
-
-// =============================================================================
-//                       AppState enum class
-// =============================================================================
-struct CodeLine {
-    std::string instruction;
-    std::shared_ptr<ICommand> cmd;
 };
 
 // =============================================================================

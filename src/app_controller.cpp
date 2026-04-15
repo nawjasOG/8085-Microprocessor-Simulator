@@ -19,6 +19,7 @@
 
 /* project specific c++ includes */
 #include "app_controller.hpp"
+#include "code_graph.hpp"
 #include "ui_builder.hpp"
 #include "view.hpp"
 #include "model.hpp"
@@ -92,8 +93,11 @@ AppState AppController::handle_special_keys(int ch) {
 }
 
 void AppController::handle_enter() {
-    // TODO: stop moving to next line if current line is empty
-    __view.editor->move_to_next_line();
+    const std::string instruction = __view.editor->get_line();
+    // don't move to next line if there is no instruction on current line
+    if (!instruction.empty()) {
+        __view.editor->move_to_next_line();
+    }
 }
 
 void AppController::handle_backspace() {
